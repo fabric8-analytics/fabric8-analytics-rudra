@@ -8,9 +8,9 @@ import uuid
 import json
 import boto3
 import botocore
-from ml_utils import logger
+from rudra import logger
 from scipy.io import loadmat
-from ml_utils.data_store.abstract_data_store import AbstractDataStore
+from rudra.data_store.abstract_data_store import AbstractDataStore
 
 
 class NotFoundAccessKeySecret(Exception):
