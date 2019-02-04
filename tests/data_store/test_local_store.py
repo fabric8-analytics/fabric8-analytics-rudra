@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ml_utils.data_store.local_data_store import LocalDataStore
+from rudra.data_store.local_data_store import LocalDataStore
 from pathlib import Path
 import pytest
 import tempfile

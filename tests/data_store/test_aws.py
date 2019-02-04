@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from pathlib import Path
-from ml_utils.data_store.aws import AmazonS3
-from ml_utils.data_store.aws import NotFoundAccessKeySecret
+from rudra.data_store.aws import AmazonS3
+from rudra.data_store.aws import NotFoundAccessKeySecret
 from moto import mock_s3
 import boto3
 import json

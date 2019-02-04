@@ -7,8 +7,8 @@ import json
 import os
 from scipy.io import loadmat
 
-from ml_utils.data_store.abstract_data_store import AbstractDataStore
-from ml_utils import logger
+from rudra.data_store.abstract_data_store import AbstractDataStore
+from rudra import logger
 
 
 class LocalDataStore(AbstractDataStore):
