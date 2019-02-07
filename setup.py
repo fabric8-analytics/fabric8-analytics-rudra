@@ -15,7 +15,7 @@ def _get_requirements():
 def _get_long_description():
     cur_dir = Path(__file__).absolute().parent
     readme_file = cur_dir.joinpath('README').with_suffix('.md')
-    with open(readme_file) as _file:
+    with open(str(readme_file)) as _file:
         return _file.read()
 
 
