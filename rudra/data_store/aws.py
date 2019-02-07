@@ -148,6 +148,9 @@ class AmazonS3(AbstractDataStore):
         """Read JSON file from the S3 bucket."""
         try:
             utf_data = self.read_generic_file(filename)
+            # python <= 3.5 requires string to load
+            if isinstance(utf_data, (bytearray, bytes)):
+                utf_data = utf_data.decode('utf-8')
             return json.loads(utf_data)
         except ValueError:
             logger.error("Not a valid json file provided.")
@@ -157,6 +160,9 @@ class AmazonS3(AbstractDataStore):
 
     def write_json_file(self, filename, contents):
         """Write JSON file into S3 bucket."""
+        # python <= 3.5 requires str
+        if isinstance(contents, (bytearray, bytes)):
+            contents = contents.decode('utf-8')
         return self.store_blob(json.dumps(contents), filename)
 
     def read_generic_file(self, filename):
