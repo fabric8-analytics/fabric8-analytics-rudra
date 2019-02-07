@@ -29,8 +29,7 @@ setup(
     license='APACHE 2.0',
     url='https://github.com/fabric8-analytics/fabric8-analytics-rudra',
     keywords=['Fabric8-Analytics', 'Machine-Learning', 'Utility'],
-    py_modules=['rudra'],
     python_requires='>=3.4',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     install_requires=_get_requirements(),
 )
