@@ -5,10 +5,12 @@
 
 import json
 import os
-from scipy.io import loadmat
+import pickle
 
 from rudra.data_store.abstract_data_store import AbstractDataStore
+from scipy.io import loadmat
 from rudra import logger
+from ruamel.yaml import YAML
 
 
 class LocalDataStore(AbstractDataStore):
@@ -27,13 +29,25 @@ class LocalDataStore(AbstractDataStore):
 
     def read_generic_file(self, filename):
         """Read a file and return its contents."""
-        with open(os.path.join(self.src_dir, filename)) as _file:
+        with open(os.path.join(self.src_dir, filename), 'rb') as _file:
             return _file.read()
 
     def read_json_file(self, filename):
         """Read JSON file from the data_input source."""
         with open(os.path.join(self.src_dir, filename)) as json_fileobj:
             return json.load(json_fileobj)
+
+    def read_yaml_file(self, filename):
+        """Read Yaml file from the data_input source."""
+        yaml = YAML()
+        yaml_content = yaml.load(self.read_generic_file(filename))
+        # convet to dict
+        return json.loads(json.dumps(yaml_content))
+
+    def read_pickle_file(self, filename):
+        """Read Pickle file from the data_input source."""
+        pickle_content = pickle.loads(self.read_generic_file(filename))
+        return pickle_content
 
     def load_matlab_multi_matrix(self, local_filename):
         """Load a '.mat'file & return a dict representation.
