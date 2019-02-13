@@ -35,9 +35,10 @@ pytest==4.2.0
 python-dateutil==2.7.5
 python-jose==2.0.2
 pytz==2018.9
-pyyaml>=4.2b1
+PyYAML==4.2b4
 requests==2.21.0
 responses==0.10.5
+ruamel.yaml==0.15.87
 s3transfer==0.1.13
 scipy==1.2.0
 six==1.12.0

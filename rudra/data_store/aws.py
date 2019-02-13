@@ -8,8 +8,11 @@ import uuid
 import json
 import boto3
 import botocore
+import pickle
+from pathlib import Path
 from rudra import logger
 from scipy.io import loadmat
+from ruamel.yaml import YAML
 from rudra.data_store.abstract_data_store import AbstractDataStore
 
 
@@ -136,10 +139,13 @@ class AmazonS3(AbstractDataStore):
         :folder_path: The local path of the folder to upload to s3
         :prefix: The prefix to attach to the folder path in the S3 bucket
         """
-        for root, _, filenames in os.walk(folder_path):
+        resolved_path = Path(folder_path).resolve()
+        parent_dir = resolved_path.parent
+        for root, _, filenames in os.walk(resolved_path):
             for filename in filenames:
                 if root != '.':
-                    s3_dest = os.path.join(prefix, root, filename)
+                    s3_dest = os.path.join(prefix,
+                                           Path(root).relative_to(parent_dir), filename)
                 else:
                     s3_dest = os.path.join(prefix, filename)
                 self.upload_file(os.path.join(root, filename), s3_dest)
@@ -157,6 +163,30 @@ class AmazonS3(AbstractDataStore):
         except Exception as exc:
             logger.error(
                 "An Exception occurred while retrieving a json file \n{}".format(str(exc)))
+
+    def read_yaml_file(self, filename):
+        """Read Yaml file from the S3 bucket."""
+        try:
+            yaml = YAML()
+            yaml_content = yaml.load(self.read_generic_file(filename))
+            # convet to dict
+            return json.loads(json.dumps(yaml_content))
+        except ValueError:
+            logger.error("Not a valid yaml file provided.")
+        except Exception as exc:
+            logger.error(
+                "An Exception occurred while retrieving a yaml file \n{}".format(str(exc)))
+
+    def read_pickle_file(self, filename):
+        """Read Pickle file from the S3 bucket."""
+        try:
+            pickle_content = pickle.loads(self.read_generic_file(filename))
+            return pickle_content
+        except ValueError:
+            logger.error("Not a valid pickle file provided.")
+        except Exception as exc:
+            logger.error(
+                "An Exception occurred while retrieving a pickle file \n{}".format(str(exc)))
 
     def write_json_file(self, filename, contents):
         """Write JSON file into S3 bucket."""
