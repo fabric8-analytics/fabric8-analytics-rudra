@@ -267,3 +267,37 @@ class AmazonS3(AbstractDataStore):
         if not model_dict:
             logger.error("Unable to load the model for scoring")
         return model_dict
+
+
+class AmazonEmr(AmazonS3):
+    """Basic interface to the Amazon EMR."""
+
+    def __init__(self, *args, **kwargs):
+        """Initialize object, setup connection to the AWS EMR."""
+        super().__init__(*args, **kwargs)
+        self._emr = None
+
+    def connect(self):
+        """Connect to the emr instance."""
+        try:
+            session = boto3.session.Session(aws_access_key_id=self._aws_access_key_id,
+                                            aws_secret_access_key=self._aws_secret_access_key,
+                                            region_name=self.region_name)
+
+            self._emr = session.client('emr', config=botocore.client.Config(
+                    signature_version='s3v4'), use_ssl=self._use_ssl)
+            logger.info("Connecting to the emr")
+        except Exception as exc:
+            logger.info(
+                "An Exception occurred while establishing a AmazonEMR connection {}"
+                .format(str(exc)))
+
+    def is_connected(self):
+        """Check if the connection to database has been established."""
+        return self._emr is not None
+
+    def disconnect(self):
+        """Close the connection to S3 database."""
+        del self._emr
+        logger.info("Disconnected AmazonS3!")
+        self._emr = None

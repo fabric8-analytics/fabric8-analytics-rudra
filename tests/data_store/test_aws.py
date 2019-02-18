@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from pathlib import Path
-from rudra.data_store.aws import AmazonS3
+from rudra.data_store.aws import AmazonS3, AmazonEmr
 from rudra.data_store.aws import NotFoundAccessKeySecret
 from moto import mock_s3
 import boto3
@@ -65,7 +65,8 @@ class TestAmazonS3:
                       aws_secret_access_key=AWS_SECRET,
                       bucket_name=BUCKET)
         s3.connect()
-        assert s3.is_connected()
+        s3.disconnect()
+        assert not s3.is_connected()
 
     def test_get_name(self, s3):
         assert s3.get_name() == 'S3:{}'.format(BUCKET)
@@ -155,3 +156,39 @@ class TestAmazonS3:
         assert response
         assert response.get('key1') == 'value1'
         assert len(response['key2']) > 0
+
+
+@pytest.fixture
+def emr(request):
+
+    emr = AmazonEmr(aws_access_key_id=AWS_KEY,
+                    aws_secret_access_key=AWS_SECRET)
+    emr.connect()
+    assert emr.is_connected()
+
+    def teardown():
+        emr.disconnect()
+
+    request.addfinalizer(teardown)
+    return emr
+
+
+class TestAmazonEMR:
+    def test_connect_without_creds(self):
+        with pytest.raises(NotFoundAccessKeySecret):
+            emr = AmazonEmr()
+            emr.connect()
+
+    def test_connect_with_creds(self):
+        emr = AmazonEmr(aws_access_key_id=AWS_KEY,
+                       aws_secret_access_key=AWS_SECRET)
+        emr.connect()
+        assert emr.is_connected()
+
+    def test_disconnect_with_creds(self):
+        emr = AmazonEmr(aws_access_key_id=AWS_KEY,
+                       aws_secret_access_key=AWS_SECRET,
+                       bucket_name=BUCKET)
+        emr.connect()
+        emr.disconnect()
+        assert not emr.is_connected()
