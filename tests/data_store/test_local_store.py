@@ -47,11 +47,11 @@ class TestLocalDataStore:
         assert len(response) > 0
         assert response.get('key1') == 'value1'
 
-    #  def test_load_matlab_multi_matrix(self, tmp_dir, local_data_store):
-    #      response = local_data_store.load_matlab_multi_matrix('matrices.mat')
-    #      assert response
-    #      assert len(response) > 0
-    #      assert isinstance(response, dict)
+    def test_load_matlab_multi_matrix(self, tmp_dir, local_data_store):
+        response = local_data_store.load_matlab_multi_matrix('matrices.mat')
+        assert response
+        assert len(response) > 0
+        assert isinstance(response, dict)
 
     def test_read_yaml_file(self, tmp_dir, local_data_store):
         response = local_data_store.read_yaml_file('test.yaml')
