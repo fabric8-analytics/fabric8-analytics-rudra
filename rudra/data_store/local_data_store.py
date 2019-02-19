@@ -8,8 +8,8 @@ import os
 import pickle
 
 from rudra.data_store.abstract_data_store import AbstractDataStore
-from scipy.io import loadmat
-from rudra import logger
+#  from scipy.io import loadmat
+#  from rudra import logger
 from ruamel.yaml import YAML
 
 
@@ -49,18 +49,18 @@ class LocalDataStore(AbstractDataStore):
         pickle_content = pickle.loads(self.read_generic_file(filename))
         return pickle_content
 
-    def load_matlab_multi_matrix(self, local_filename):
-        """Load a '.mat'file & return a dict representation.
-
-        :local_filename: The path of the object.
-        :returns: A dict containing numpy matrices against the keys of the
-                  multi-matrix.
-        """
-        try:
-            model_dict = loadmat(os.path.join(self.src_dir, local_filename))
-            return model_dict
-        except Exception as exc:
-            logger.error("Unable to load mat file \n{}".format(str(exc)))
+    #  def load_matlab_multi_matrix(self, local_filename):
+    #      """Load a '.mat'file & return a dict representation.
+    #
+    #      :local_filename: The path of the object.
+    #      :returns: A dict containing numpy matrices against the keys of the
+    #                multi-matrix.
+    #      """
+    #      try:
+    #          model_dict = loadmat(os.path.join(self.src_dir, local_filename))
+    #          return model_dict
+    #      except Exception as exc:
+    #          logger.error("Unable to load mat file \n{}".format(str(exc)))
 
     def upload_file(self):
         """Upload file to a data store."""
