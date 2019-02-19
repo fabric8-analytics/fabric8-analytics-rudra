@@ -11,7 +11,7 @@ import botocore
 import pickle
 from pathlib import Path
 from rudra import logger
-from scipy.io import loadmat
+#  from scipy.io import loadmat
 from ruamel.yaml import YAML
 from rudra.data_store.abstract_data_store import AbstractDataStore
 
@@ -253,20 +253,20 @@ class AmazonS3(AbstractDataStore):
             logger.error(
                 "An Exception occurred while cleaning the bucket\n {}".format(str(exc)))
 
-    def load_matlab_multi_matrix(self, s3_path):
-        """Load a '.mat'file & return a dict representation.
+    # def load_matlab_multi_matrix(self, s3_path):
+    #     """Load a '.mat'file & return a dict representation.
 
-        :s3_path: The path of the object in the S3 bucket.
-        :returns: A dict containing numpy matrices against the keys of the
-                  multi-matrix.
-        """
-        local_filename = os.path.join('/tmp', s3_path.split('/')[-1])
-        self._s3.Bucket(self.bucket_name).download_file(
-            s3_path, local_filename)
-        model_dict = loadmat(local_filename)
-        if not model_dict:
-            logger.error("Unable to load the model for scoring")
-        return model_dict
+    #     :s3_path: The path of the object in the S3 bucket.
+    #     :returns: A dict containing numpy matrices against the keys of the
+    #               multi-matrix.
+    #     """
+    #     local_filename = os.path.join('/tmp', s3_path.split('/')[-1])
+    #     self._s3.Bucket(self.bucket_name).download_file(
+    #         s3_path, local_filename)
+    #     model_dict = loadmat(local_filename)
+    #     if not model_dict:
+    #         logger.error("Unable to load the model for scoring")
+    #     return model_dict
 
 
 class AmazonEmr(AmazonS3):

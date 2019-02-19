@@ -123,11 +123,11 @@ class TestAmazonS3:
         s3.s3_clean_bucket()
         assert len(s3.list_bucket_keys()) == 0
 
-    def test_load_matlab_multi_matrix(self, s3, upload_dir):
-
-        assert len(s3.list_bucket_keys()) > 0
-        content = s3.load_matlab_multi_matrix('data/matrices.mat')
-        assert isinstance(content, dict)
+    #  def test_load_matlab_multi_matrix(self, s3, upload_dir):
+    #
+    #      assert len(s3.list_bucket_keys()) > 0
+    #      content = s3.load_matlab_multi_matrix('data/matrices.mat')
+    #      assert isinstance(content, dict)
 
     def test_s3_upload_folder(self, s3):
         dir_name = 'test_dir'
