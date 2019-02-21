@@ -1,5 +1,5 @@
 """EMR script builder implementation."""
-from rudra.deployments.abstract_emr import AbstractEMR
+from rudra.deployments.emrs.abstract_emr import AbstractEMR
 from rudra.utils.validation import check_field_exists
 from rudra.utils.helper import get_training_file_url, get_github_repo_info
 from rudra import logger
