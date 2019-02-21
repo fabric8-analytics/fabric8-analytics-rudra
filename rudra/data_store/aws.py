@@ -301,3 +301,7 @@ class AmazonEmr(AmazonS3):
         del self._emr
         logger.info("Disconnected AmazonS3!")
         self._emr = None
+
+    def run_flow(self, configs):
+        """Run emr job flow."""
+        return self._emr.run_job_flow(**configs)
