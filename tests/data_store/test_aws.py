@@ -4,7 +4,7 @@
 from pathlib import Path
 from rudra.data_store.aws import AmazonS3, AmazonEmr
 from rudra.data_store.aws import NotFoundAccessKeySecret
-from moto import mock_s3
+from moto import mock_s3, mock_emr
 import boto3
 import json
 import pytest
@@ -159,6 +159,7 @@ class TestAmazonS3:
 
 
 @pytest.fixture
+@mock_emr
 def emr(request):
 
     emr = AmazonEmr(aws_access_key_id=AWS_KEY,
@@ -192,3 +193,27 @@ class TestAmazonEMR:
         emr.connect()
         emr.disconnect()
         assert not emr.is_connected()
+
+    def test_run_flow(self, emr):
+        run_job_flow_args = dict(
+            Instances={
+                'InstanceCount': 1,
+                'KeepJobFlowAliveWhenNoSteps': True,
+                'MasterInstanceType': 'c3.medium',
+                'Placement': {'AvailabilityZone': 'us-east-1a'},
+                'SlaveInstanceType': 'c3.xlarge',
+            },
+            JobFlowRole='EMR_EC2_DefaultRole',
+            LogUri='s3://fakebucket/log',
+            Name='HPF_training',
+            ServiceRole='EMR_DefaultRole',
+            VisibleToAllUsers=True)
+
+        response = emr.run_flow(run_job_flow_args)
+        status_code = response.get(
+            'ResponseMetadata', {}).get('HTTPStatusCode')
+        assert status_code == 200
+        job_flow_id = response.get('JobFlowId')
+        assert job_flow_id
+        cluster_info = emr._emr.describe_cluster(ClusterId=job_flow_id)
+        assert cluster_info.get("Cluster", {}).get("Name") == "HPF_training"
