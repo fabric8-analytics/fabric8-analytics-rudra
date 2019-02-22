@@ -44,7 +44,7 @@ def get_training_file_url(user, repo, branch='master', training_file_path='train
                                  training_file_path)))
 
     if not check_url_alive(file_url):
-        logger.error("unable to reach the github file path",
+        logger.error("unable to reach the github training file path",
                      extra={'github_url': file_url})
-        raise ValueError("Could not training file")
+        raise ValueError("Could not able to fetch training file")
     return file_url

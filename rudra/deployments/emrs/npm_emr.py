@@ -27,6 +27,7 @@ class NpmEMR(EMRScriptBuilder):
         emr_config_obj = EMRConfig(name=name,
                                    s3_bootstrap_uri=bootstrap_uri,
                                    training_file_url=self.training_file_url,
+                                   instance_type='p3.2xlarge',
                                    log_uri=log_uri,
                                    ecosystem=self.ecosystem,
                                    properties=self.properties,
