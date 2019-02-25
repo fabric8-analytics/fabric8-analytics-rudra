@@ -203,10 +203,13 @@ class AmazonS3(AbstractDataStore):
             logger.error(
                 "An Exception occurred while retrieving an object\n {}".format(str(exc)))
 
-    def list_bucket_objects(self):
+    def list_bucket_objects(self, prefix=None):
         """List all the objects in bucket."""
         try:
-            return self._s3.Bucket(self.bucket_name).objects.all()
+            if prefix:
+                return self._s3.Bucket(self.bucket_name).objects.filter(Prefix=prefix)
+            else:
+                return self._s3.Bucket(self.bucket_name).objects.filter()
         except Exception as exc:
             logger.error(
                 "An Exception occurred while listing objects in bucket\n {}".format(str(exc)))
