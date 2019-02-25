@@ -97,6 +97,11 @@ class TestAmazonS3:
         assert objects
         assert len(list(objects)) > 0
 
+    def test_list_bucket_objects_filter(self, s3, upload_dir):
+        objects = s3.list_bucket_objects(prefix='data/')
+        assert objects
+        assert len(list(objects)) > 0
+
     def test_list_bucket_keys(self, s3, upload_dir):
         bucket_keys = s3.list_bucket_keys()
         assert len(bucket_keys) > 0
