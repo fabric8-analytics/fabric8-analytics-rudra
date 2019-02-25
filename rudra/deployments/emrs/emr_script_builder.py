@@ -31,13 +31,13 @@ class EMRScriptBuilder(AbstractEMR):
         self.env = input_dict.get('environment')
         user, repo = get_github_repo_info(input_dict.get('github_repo'))
         self.training_file_url = get_training_file_url(user, repo)
-        hyper_params = input_dict.get('hyper_params')
+        self.hyper_params = input_dict.get('hyper_params', '{}')
         self.aws_access_key = os.getenv("AWS_S3_ACCESS_KEY_ID") \
             or input_dict.get('aws_access_key')
         self.aws_secret_key = os.getenv("AWS_S3_SECRET_ACCESS_KEY")\
             or input_dict.get('aws_secret_key')
         self.bucket_name = input_dict.get('bucket_name')
-        if hyper_params:
+        if self.hyper_params:
             try:
                 self.hyper_params = json.dumps(input_dict.get('hyper_params'),
                                                separators=(',', ':'))
