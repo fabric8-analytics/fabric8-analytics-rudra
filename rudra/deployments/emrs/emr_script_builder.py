@@ -18,8 +18,7 @@ class EMRScriptBuilder(AbstractEMR):
     def construct_job(self, input_dict):
         """Submit emr job."""
         required_fields = ['environment', 'data_version',
-                           'bucket_name', 'aws_access_key', 'aws_secret_key',
-                           'github_repo']
+                           'bucket_name', 'github_repo']
 
         missing_fields = check_field_exists(input_dict, required_fields)
 
