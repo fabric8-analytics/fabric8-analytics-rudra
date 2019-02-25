@@ -12,7 +12,7 @@ def check_field_exists(input_data, fields):
                 logger.error(
                     "Please provide the valid value for the field {}".format(field))
     if isinstance(input_data, (list, dict, set, frozenset)):
-        return list(set(input_data).difference(set(fields)))
+        return list(set(fields).difference(set(input_data)))
     raise ValueError
 
 
