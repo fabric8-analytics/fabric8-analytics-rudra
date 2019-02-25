@@ -24,7 +24,7 @@ class EMRScriptBuilder(AbstractEMR):
 
         if missing_fields:
             logger.error("Missing the parameters in input_dict",
-                         extra=missing_fields)
+                         extra={"missing_fields": missing_fields})
             raise ValueError("Required fields are missing in the input {}"
                              .format(missing_fields))
 
