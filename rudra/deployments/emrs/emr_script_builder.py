@@ -29,6 +29,7 @@ class EMRScriptBuilder(AbstractEMR):
                              .format(missing_fields))
 
         self.env = input_dict.get('environment')
+        self.data_version = input_dict.get('data_version')
         user, repo = get_github_repo_info(input_dict.get('github_repo'))
         self.training_file_url = get_training_file_url(user, repo)
         self.hyper_params = input_dict.get('hyper_params', '{}')
@@ -48,7 +49,9 @@ class EMRScriptBuilder(AbstractEMR):
         self.properties = {
             'AWS_S3_ACCESS_KEY_ID': self.aws_access_key,
             'AWS_S3_SECRET_ACCESS_KEY': self.aws_secret_key,
-            'BUCKET_NAME': self.bucket_name
+            'AWS_S3_BUCKET_NAME': self.bucket_name,
+            'MODEL_VERSION': self.data_version,
+            'DEPLOYMENT_PREFIX': self.env
         }
 
     def run_job(self, input_dict):
