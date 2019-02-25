@@ -8,10 +8,9 @@ def check_field_exists(input_data, fields):
     """Check field exist in the input data."""
     if isinstance(input_data, dict):
         for field in fields:
-            if not input_data.get(fields):
+            if not input_data.get(field):
                 logger.error(
                     "Please provide the valid value for the field {}".format(field))
-                raise ValueError
     if isinstance(input_data, (list, dict, set, frozenset)):
         return list(set(input_data).difference(set(fields)))
     raise ValueError
