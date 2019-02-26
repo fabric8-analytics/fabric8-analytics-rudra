@@ -87,6 +87,12 @@ class TestAmazonS3:
         json_data = s3.read_json_file('dummy.json')
         assert json_data.get("keyA") == "valueB"
 
+    def test_write_pickle_file(self, s3):
+        s3.write_pickle_file('dummy.pkl', {"keyA": "valueB"})
+        assert len(s3.list_bucket_keys()) > 0
+        pkl_data = s3.read_pickle_file('dummy.pkl')
+        assert pkl_data.get("keyA") == "valueB"
+
     def test_read_generic_file(self, s3, upload_dir):
         content = s3.read_generic_file('data/test.json')
         assert isinstance(content, (bytes, bytearray))

@@ -195,6 +195,10 @@ class AmazonS3(AbstractDataStore):
             contents = contents.decode('utf-8')
         return self.store_blob(json.dumps(contents), filename)
 
+    def write_pickle_file(self, filename, contents):
+        """Write Pickle file into S3 bucket."""
+        return self.store_blob(pickle.dumps(contents), filename)
+
     def read_generic_file(self, filename):
         """Retrieve remote object content."""
         try:
