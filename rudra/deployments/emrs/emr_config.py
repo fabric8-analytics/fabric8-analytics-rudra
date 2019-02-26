@@ -5,25 +5,6 @@ class EMRConfig:
     """Config class for EMR."""
 
     home_dir = '/home/hadoop'
-    instances = {
-        'KeepJobFlowAliveWhenNoSteps': False,
-        'TerminationProtected': False,
-        'Ec2SubnetId': 'subnet-50271f16',
-        'Ec2KeyName': 'Zeppelin2Spark',
-        'InstanceGroups': []
-    }
-
-    steps = [
-        {
-            'Name': 'Setup Debugging',
-            'ActionOnFailure': 'TERMINATE_CLUSTER',
-            'HadoopJarStep': {
-                'Jar': 'command-runner.jar',
-                'Args': ['state-pusher-script']
-            }
-        },
-    ]
-    bootstrap_actions = []
 
     def __init__(self, name, log_uri, ecosystem, s3_bootstrap_uri, training_file_url,
                  release_label='emr-5.10.0', instance_count=1, instance_type='m3.xlarge',
@@ -31,6 +12,25 @@ class EMRConfig:
                  job_flow_role='EMR_EC2_DefaultRole', service_role='EMR_DefaultRole',
                  properties={}, hyper_params='{}'):
         """Initialize the EMRConfig object."""
+        self.instances = {
+            'KeepJobFlowAliveWhenNoSteps': False,
+            'TerminationProtected': False,
+            'Ec2SubnetId': 'subnet-50271f16',
+            'Ec2KeyName': 'Zeppelin2Spark',
+            'InstanceGroups': []
+        }
+
+        self.steps = [
+            {
+                'Name': 'Setup Debugging',
+                'ActionOnFailure': 'TERMINATE_CLUSTER',
+                'HadoopJarStep': {
+                    'Jar': 'command-runner.jar',
+                    'Args': ['state-pusher-script']
+                }
+            },
+        ]
+        self.bootstrap_actions = []
         self.emr_config = None
         self.name = name
         self.log_uri = log_uri
@@ -55,7 +55,8 @@ class EMRConfig:
         """Get the config object."""
         download_training_file = [
             'wget', self.training_file_url, '-P', self.home_dir]
-        execute_training_file = ['python3.6', self.home_dir+'/train.py', self.hyper_params]
+        execute_training_file = ['python3.6',
+                                 self.home_dir+'/train.py', self.hyper_params]
         step2 = {
             'Name': 'setup - copy files',
             'ActionOnFailure': 'TERMINATE_CLUSTER',

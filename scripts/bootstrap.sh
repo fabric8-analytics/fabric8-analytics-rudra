@@ -65,9 +65,11 @@ echo "Environment variables are set!"
 set -e -x
 
 # enable debugging & set strict error trap
-sudo yum -y install -v python36 python36-pip wget git
+sudo yum install -y zip gcc-c++ git python36-pip python36-requests httpd httpd-devel python36-devel wget git 
 
-sudo python3.6 -m pip install tensorflow-gpu pandas flask h5py
+sudo python3.6 -m pip install pandas
+sudo python3.6 -m pip install Cython==0.29.1
+sudo python3.6 -m pip install hpfrec==0.2.2.9
 sudo python3.6 -m pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra
 
 # Now set the PYTHONPATH
