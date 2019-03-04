@@ -1,6 +1,6 @@
 from moto import mock_emr
 import mock
-from rudra.deployments.emrs import PyPiEMR
+from rudra.deployments.emr_scripts import PyPiEMR
 
 
 class MockEMRConfig(mock.Mock):
@@ -25,7 +25,7 @@ class MockEMRConfig(mock.Mock):
 
 class TestPyPiEMR:
 
-    @mock.patch('rudra.deployments.emrs.pypi_emr.EMRConfig', new_callable=MockEMRConfig)
+    @mock.patch('rudra.deployments.emr_scripts.pypi_emr.EMRConfig', new_callable=MockEMRConfig)
     @mock.patch.dict('os.environ', {'AWS_S3_ACCESS_KEY_ID': 'fake_id',
                                     'AWS_S3_SECRET_ACCESS_KEY': 'fake_secret'})
     @mock_emr

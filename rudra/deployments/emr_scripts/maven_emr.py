@@ -1,13 +1,13 @@
-"""EMR script implementation for the PYPI service."""
+"""EMR script implementation for the Maven service."""
 from rudra import logger
-from rudra.deployments.emrs.emr_config import EMRConfig
-from rudra.deployments.emrs.emr_script_builder import EMRScriptBuilder
+from rudra.deployments.emr_scripts.emr_config import EMRConfig
+from rudra.deployments.emr_scripts.emr_script_builder import EMRScriptBuilder
 
 
-class PyPiEMR(EMRScriptBuilder):
-    """PyPi Emr script implementation."""
+class MavenEMR(EMRScriptBuilder):
+    """Maven Emr script implementation."""
 
-    ecosystem = 'pypi'
+    ecosystem = 'maven'
 
     def run_job(self, input_dict):
         """Run the emr job."""

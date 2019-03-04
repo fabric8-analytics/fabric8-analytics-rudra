@@ -1,4 +1,4 @@
-from rudra.deployments.emrs.emr_config import EMRConfig
+from rudra.deployments.emr_scripts.emr_config import EMRConfig
 
 
 class TestEMRConfig:
