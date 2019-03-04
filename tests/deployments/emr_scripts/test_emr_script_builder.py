@@ -1,4 +1,4 @@
-from rudra.deployments.emrs.emr_script_builder import EMRScriptBuilder
+from rudra.deployments.emr_scripts.emr_script_builder import EMRScriptBuilder
 from time import gmtime, strftime
 from contextlib import suppress
 from mock import patch

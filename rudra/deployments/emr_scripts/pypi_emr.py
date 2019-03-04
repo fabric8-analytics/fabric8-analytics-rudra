@@ -1,13 +1,13 @@
-"""EMR script implementation for the NPM service."""
+"""EMR script implementation for the PYPI service."""
 from rudra import logger
-from rudra.deployments.emrs.emr_config import EMRConfig
-from rudra.deployments.emrs.emr_script_builder import EMRScriptBuilder
+from rudra.deployments.emr_scripts.emr_config import EMRConfig
+from rudra.deployments.emr_scripts.emr_script_builder import EMRScriptBuilder
 
 
-class NpmEMR(EMRScriptBuilder):
-    """NPM Emr script implementation."""
+class PyPiEMR(EMRScriptBuilder):
+    """PyPi Emr script implementation."""
 
-    ecosystem = 'npm'
+    ecosystem = 'pypi'
 
     def run_job(self, input_dict):
         """Run the emr job."""
@@ -27,7 +27,6 @@ class NpmEMR(EMRScriptBuilder):
         emr_config_obj = EMRConfig(name=name,
                                    s3_bootstrap_uri=bootstrap_uri,
                                    training_file_url=self.training_file_url,
-                                   instance_type='p3.2xlarge',
                                    log_uri=log_uri,
                                    ecosystem=self.ecosystem,
                                    properties=self.properties,
