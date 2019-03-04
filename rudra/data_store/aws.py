@@ -13,6 +13,7 @@ from pathlib import Path
 from rudra import logger
 from scipy.io import loadmat
 from ruamel.yaml import YAML
+from botocore.exceptions import ClientError
 from rudra.data_store.abstract_data_store import AbstractDataStore
 
 
@@ -93,6 +94,7 @@ class AmazonS3(AbstractDataStore):
                 self._s3 = session.resource('s3', config=botocore.client.Config(
                     signature_version='s3v4'), use_ssl=self._use_ssl)
             logger.info("Conneting to the s3")
+            return self._s3
         except Exception as exc:
             logger.info(
                 "An Exception occurred while establishing a AmazonS3 connection {}"
@@ -294,6 +296,7 @@ class AmazonEmr(AmazonS3):
             self._emr = session.client('emr', config=botocore.client.Config(
                 signature_version='s3v4'), use_ssl=self._use_ssl)
             logger.info("Connecting to the emr")
+            return self._emr
         except Exception as exc:
             logger.info(
                 "An Exception occurred while establishing a AmazonEMR connection {}"
@@ -312,3 +315,18 @@ class AmazonEmr(AmazonS3):
     def run_flow(self, configs):
         """Run emr job flow."""
         return self._emr.run_job_flow(**configs)
+
+    def terminate_jobs(self, jobs):
+        """Terminate emr job."""
+        logger.info("Terminating jobs")
+        return self._emr.terminate_job_flows(
+            JobFlowIds=[jobs] if isinstance(jobs, str) else jobs)
+
+    def get_status(self, cluster_id):
+        """Get the status of EMR Instance."""
+        try:
+            cluster = self._emr.describe_cluster(ClusterId=cluster_id)
+            return cluster.get('Cluster', {}).get('Status')
+        except ClientError as exc:
+            logger.error("Unable to get the cluster info",
+                         extra={"cluster_id": cluster_id})

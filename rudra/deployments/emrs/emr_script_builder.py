@@ -1,5 +1,6 @@
 """EMR script builder implementation."""
 from rudra.deployments.emrs.abstract_emr import AbstractEMR
+from rudra.data_store.aws import AmazonEmr
 from rudra.utils.validation import check_field_exists
 from rudra.utils.helper import get_training_file_url, get_github_repo_info
 from rudra import logger
@@ -33,9 +34,9 @@ class EMRScriptBuilder(AbstractEMR):
         user, repo = get_github_repo_info(input_dict.get('github_repo'))
         self.training_file_url = get_training_file_url(user, repo)
         self.hyper_params = input_dict.get('hyper_params', '{}')
-        self.aws_access_key = os.getenv("AWS_S3_ACCESS_KEY_ID") \
+        aws_access_key = os.getenv("AWS_S3_ACCESS_KEY_ID") \
             or input_dict.get('aws_access_key')
-        self.aws_secret_key = os.getenv("AWS_S3_SECRET_ACCESS_KEY")\
+        aws_secret_key = os.getenv("AWS_S3_SECRET_ACCESS_KEY")\
             or input_dict.get('aws_secret_key')
         self.bucket_name = input_dict.get('bucket_name')
         if self.hyper_params:
@@ -47,12 +48,23 @@ class EMRScriptBuilder(AbstractEMR):
                              extra={"hyper_params": input_dict.get('hyper_params')})
 
         self.properties = {
-            'AWS_S3_ACCESS_KEY_ID': self.aws_access_key,
-            'AWS_S3_SECRET_ACCESS_KEY': self.aws_secret_key,
+            'AWS_S3_ACCESS_KEY_ID': aws_access_key,
+            'AWS_S3_SECRET_ACCESS_KEY': aws_secret_key,
             'AWS_S3_BUCKET_NAME': self.bucket_name,
             'MODEL_VERSION': self.data_version,
             'DEPLOYMENT_PREFIX': self.env
         }
+
+        self.aws_emr = AmazonEmr(aws_access_key_id=aws_access_key,
+                                 aws_secret_access_key=aws_secret_key)
+
+        self.aws_emr_client = self.aws_emr.connect()
+
+        if not self.aws_emr.is_connected():
+            logger.error("Unable to connect to emr instance.")
+            raise ValueError
+
+        logger.info("Successfully connected to emr instance.")
 
     def run_job(self, input_dict):
         """Run the emr job."""
