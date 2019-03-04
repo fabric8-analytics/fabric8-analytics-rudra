@@ -1,6 +1,5 @@
 """EMR script implementation for the Maven service."""
 from rudra import logger
-from rudra.data_store.aws import AmazonEmr
 from rudra.deployments.emrs.emr_config import EMRConfig
 from rudra.deployments.emrs.emr_script_builder import EMRScriptBuilder
 
@@ -33,18 +32,8 @@ class MavenEMR(EMRScriptBuilder):
                                    properties=self.properties,
                                    hyper_params=self.hyper_params)
 
-        aws_emr = AmazonEmr(aws_access_key_id=self.aws_access_key,
-                            aws_secret_access_key=self.aws_secret_key)
-        aws_emr.connect()
-
-        if not aws_emr.is_connected():
-            logger.error("Unable to connect to emr instance.")
-            raise ValueError
-
-        logger.info("Successfully connected to emr instance.")
-
         configs = emr_config_obj.get_config()
-        status = aws_emr.run_flow(configs)
+        status = self.aws_emr.run_flow(configs)
         logger.info("EMR job is running {}".format(status))
         status_code = status.get('ResponseMetadata', {}).get('HTTPStatusCode')
         if status_code != 200:

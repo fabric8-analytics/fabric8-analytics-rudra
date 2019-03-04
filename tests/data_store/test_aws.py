@@ -226,5 +226,76 @@ class TestAmazonEMR:
         assert status_code == 200
         job_flow_id = response.get('JobFlowId')
         assert job_flow_id
-        cluster_info = emr._emr.describe_cluster(ClusterId=job_flow_id)
-        assert cluster_info.get("Cluster", {}).get("Name") == "HPF_training"
+        job_status = emr.get_status(job_flow_id)
+        assert job_status.get('State') == 'WAITING'
+
+    def test_terminate_job(self, emr):
+
+        run_job_flow_args = dict(
+            Instances={
+                'InstanceCount': 1,
+                'KeepJobFlowAliveWhenNoSteps': True,
+                'MasterInstanceType': 'c3.medium',
+                'Placement': {'AvailabilityZone': 'us-east-1a'},
+                'SlaveInstanceType': 'c3.xlarge',
+            },
+            JobFlowRole='EMR_EC2_DefaultRole',
+            LogUri='s3://fakebucket/log',
+            Name='HPF_training',
+            ServiceRole='EMR_DefaultRole',
+            VisibleToAllUsers=True)
+
+        response = emr.run_flow(run_job_flow_args)
+        status_code = response.get(
+            'ResponseMetadata', {}).get('HTTPStatusCode')
+        assert status_code == 200
+        job_flow_id = response.get('JobFlowId')
+        job_status = emr.get_status(job_flow_id)
+        assert job_status.get('State') == 'WAITING'
+        emr.terminate_jobs(job_flow_id)
+        job_status = emr.get_status(job_flow_id)
+        assert job_status.get('State') == 'TERMINATED'
+
+    def test_terminate_jobs(self, emr):
+
+        run_job_flow_args = dict(
+            Instances={
+                'InstanceCount': 1,
+                'KeepJobFlowAliveWhenNoSteps': True,
+                'MasterInstanceType': 'c3.medium',
+                'Placement': {'AvailabilityZone': 'us-east-1a'},
+                'SlaveInstanceType': 'c3.xlarge',
+            },
+            JobFlowRole='EMR_EC2_DefaultRole',
+            LogUri='s3://fakebucket/log',
+            Name='HPF_training',
+            ServiceRole='EMR_DefaultRole',
+            VisibleToAllUsers=True)
+
+        # 1 job
+        response = emr.run_flow(run_job_flow_args)
+        status_code = response.get(
+            'ResponseMetadata', {}).get('HTTPStatusCode')
+        assert status_code == 200
+
+        # 2 job
+        response = emr.run_flow(run_job_flow_args)
+        status_code = response.get(
+            'ResponseMetadata', {}).get('HTTPStatusCode')
+        assert status_code == 200
+
+        job_flow_id1 = response.get('JobFlowId')
+        job_flow_id2 = response.get('JobFlowId')
+
+        job_status1 = emr.get_status(job_flow_id1)
+        job_status2 = emr.get_status(job_flow_id2)
+
+        assert job_status1.get('State') == 'WAITING'
+        assert job_status2.get('State') == 'WAITING'
+
+        emr.terminate_jobs([job_flow_id1, job_flow_id2])
+        job_status1 = emr.get_status(job_flow_id1)
+        job_status2 = emr.get_status(job_flow_id2)
+
+        assert job_status1.get('State') == 'TERMINATED'
+        assert job_status2.get('State') == 'TERMINATED'
