@@ -327,6 +327,6 @@ class AmazonEmr(AmazonS3):
         try:
             cluster = self._emr.describe_cluster(ClusterId=cluster_id)
             return cluster.get('Cluster', {}).get('Status')
-        except ClientError as exc:
+        except ClientError:
             logger.error("Unable to get the cluster info",
                          extra={"cluster_id": cluster_id})

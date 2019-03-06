@@ -27,7 +27,7 @@ def load_hyper_params():
         try:
             if input_data:
                 return loads(input_data[0])
-        except Exception as exc:
+        except Exception:
             logger.error("Unable to decode the hyper params")
 
 
