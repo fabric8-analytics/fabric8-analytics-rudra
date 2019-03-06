@@ -71,7 +71,7 @@ class TestAmazonS3:
     def test_get_name(self, s3):
         assert s3.get_name() == 'S3:{}'.format(BUCKET)
 
-    def test_object_exists(self, s3, upload_dir):
+    def test_object_exists(self, s3, _upload_dir):
         assert s3.object_exists('data/test.json')
 
     def test_upload_file(self, s3):
@@ -93,34 +93,34 @@ class TestAmazonS3:
         pkl_data = s3.read_pickle_file('dummy.pkl')
         assert pkl_data.get("keyA") == "valueB"
 
-    def test_read_generic_file(self, s3, upload_dir):
+    def test_read_generic_file(self, s3, _upload_dir):
         content = s3.read_generic_file('data/test.json')
         assert isinstance(content, (bytes, bytearray))
         assert len(content) > 0
 
-    def test_list_bucket_objects(self, s3, upload_dir):
+    def test_list_bucket_objects(self, s3, _upload_dir):
         objects = s3.list_bucket_objects()
         assert objects
         assert len(list(objects)) > 0
 
-    def test_list_bucket_objects_filter(self, s3, upload_dir):
+    def test_list_bucket_objects_filter(self, s3, _upload_dir):
         objects = s3.list_bucket_objects(prefix='data/')
         assert objects
         assert len(list(objects)) > 0
 
-    def test_list_bucket_keys(self, s3, upload_dir):
+    def test_list_bucket_keys(self, s3, _upload_dir):
         bucket_keys = s3.list_bucket_keys()
         assert len(bucket_keys) > 0
         assert 'data/test.json' in bucket_keys
 
-    def test_s3_delete_object(self, s3, upload_dir):
+    def test_s3_delete_object(self, s3, _upload_dir):
         bucket_keys = s3.list_bucket_keys()
         assert 'data/test.json' in bucket_keys
         response = s3.s3_delete_object('data/test.json')
         assert 'Deleted' in response
         assert response.get('ResponseMetadata').get('HTTPStatusCode') == 200
 
-    def test_s3_delete_objects(self, s3, upload_dir):
+    def test_s3_delete_objects(self, s3, _upload_dir):
         s3.write_json_file('dummy.json', {"keyA": "valueB"})
         files = ['dummy.json', 'data/test.json']
         assert len(s3.list_bucket_keys()) > 0
@@ -129,12 +129,12 @@ class TestAmazonS3:
         assert not {k.get('Key') for k in response.get('Deleted')} - set(files)
         assert response.get('ResponseMetadata').get('HTTPStatusCode') == 200
 
-    def test_s3_clean_bucket(self, s3, upload_dir):
+    def test_s3_clean_bucket(self, s3, _upload_dir):
         assert len(s3.list_bucket_keys()) > 0
         s3.s3_clean_bucket()
         assert len(s3.list_bucket_keys()) == 0
 
-    def test_load_matlab_multi_matrix(self, s3, upload_dir):
+    def test_load_matlab_multi_matrix(self, s3, _upload_dir):
 
         assert len(s3.list_bucket_keys()) > 0
         content = s3.load_matlab_multi_matrix('data/matrices.mat')
@@ -154,7 +154,7 @@ class TestAmazonS3:
         assert len(bucket_keys) > 0
         assert bucket_keys[0] == 'example.json'
 
-    def test_read_yaml_file(self, s3, upload_dir):
+    def test_read_yaml_file(self, s3, _upload_dir):
         response = s3.read_yaml_file('data/test.yaml')
         assert response
         assert len(response) > 0
@@ -162,7 +162,7 @@ class TestAmazonS3:
         assert len(response['items']) > 0
         assert response.get('items')[0]['name'] == 'item1'
 
-    def test_read_pickle_file(self, s3, upload_dir):
+    def test_read_pickle_file(self, s3, _upload_dir):
         response = s3.read_pickle_file('data/test.pkl')
         assert response
         assert response.get('key1') == 'value1'
