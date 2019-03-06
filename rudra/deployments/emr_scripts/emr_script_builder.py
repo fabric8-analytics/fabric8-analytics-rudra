@@ -43,7 +43,7 @@ class EMRScriptBuilder(AbstractEMR):
             try:
                 self.hyper_params = json.dumps(input_dict.get('hyper_params'),
                                                separators=(',', ':'))
-            except Exception as exc:
+            except Exception:
                 logger.error("Invalid hyper params",
                              extra={"hyper_params": input_dict.get('hyper_params')})
 
