@@ -7,11 +7,11 @@ class AbstractEMR(metaclass=abc.ABCMeta):
     """Abstract class for the EMR Scripts."""
 
     @abc.abstractmethod
-    def construct_job(self, input_dict):
+    def construct_job(self, _input_dict):
         """Construct emr job."""
         pass
 
     @abc.abstractmethod
-    def run_job(self, input_dict):
+    def run_job(self, _input_dict):
         """Run emr Job."""
         pass

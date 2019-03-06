@@ -25,21 +25,21 @@ class AbstractDataStore(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def read_pickle_file(self, filename):
+    def read_pickle_file(self, _filename):
         """Read Pickle file from data store."""
         pass
 
     @abc.abstractmethod
-    def read_yaml_file(self, filename):
+    def read_yaml_file(self, _filename):
         """Read Pickle file from data store."""
         pass
 
     @abc.abstractmethod
-    def upload_file(self, src, target):
+    def upload_file(self, _src, _target):
         """Upload file into data store."""
         pass
 
     @abc.abstractmethod
-    def write_json_file(self, filename, contents):
+    def write_json_file(self, _filename, _contents):
         """Write JSON file into data store."""
         pass
