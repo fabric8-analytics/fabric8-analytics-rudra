@@ -29,7 +29,7 @@ class TestNpmEMR:
     @mock.patch.dict('os.environ', {'AWS_S3_ACCESS_KEY_ID': 'fake_id',
                                     'AWS_S3_SECRET_ACCESS_KEY': 'fake_secret'})
     @mock_emr
-    def test_run_job(self, emr_config_mocked):
+    def test_run_job(self, _emr_config_mocked):
         npm_emr = NpmEMR()
         input_dict = {'environment': 'dev',
                       'data_version': '2019-01-01',
