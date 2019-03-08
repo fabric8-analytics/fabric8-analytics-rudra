@@ -31,8 +31,8 @@ class TestEMRConfig:
         assert bootstrap_file_path == 's3://fake-bucket/bootstrap.sh'
         assert len(emr_config['Steps']) > 0
 
-        assert any(['python3.6' in s["HadoopJarStep"]["Args"]
-                    and '{"a":123}' in s["HadoopJarStep"]["Args"] for s in emr_config['Steps']])
+        assert any(['python3.6' in s["HadoopJarStep"]["Args"] and
+                   '{"a":123}' in s["HadoopJarStep"]["Args"] for s in emr_config['Steps']])
 
         for grp in emr_config['Instances']['InstanceGroups']:
             assert grp.get('InstanceType') == 'p2.large'
