@@ -56,7 +56,7 @@ class EMRConfig:
         download_training_file = [
             'wget', self.training_file_url, '-P', self.home_dir]
         execute_training_file = ['python3.6',
-                                 self.home_dir+'/train.py', self.hyper_params]
+                                 self.home_dir + '/train.py', self.hyper_params]
         step2 = {
             'Name': 'setup - copy files',
             'ActionOnFailure': 'TERMINATE_CLUSTER',
