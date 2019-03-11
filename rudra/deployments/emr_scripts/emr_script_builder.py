@@ -1,8 +1,7 @@
 """EMR script builder implementation."""
 from rudra.deployments.emr_scripts.abstract_emr import AbstractEMR
 from rudra.data_store.aws import AmazonEmr
-from rudra.utils.validation import check_field_exists
-from rudra.utils.helper import get_training_file_url, get_github_repo_info
+from rudra.utils.validation import check_field_exists, check_url_alive
 from rudra import logger
 from time import gmtime, strftime
 import os
@@ -31,8 +30,11 @@ class EMRScriptBuilder(AbstractEMR):
 
         self.env = input_dict.get('environment')
         self.data_version = input_dict.get('data_version')
-        user, repo = get_github_repo_info(input_dict.get('github_repo'))
-        self.training_file_url = get_training_file_url(user, repo)
+        github_repo = input_dict.get('github_repo')
+        if not check_url_alive(github_repo):
+            raise ValueError("Unable to find the github_repo {}".format(github_repo))
+            logger.error("Unable to find the github_repo {}".format(github_repo))
+        self.training_repo_url = github_repo
         self.hyper_params = input_dict.get('hyper_params', '{}')
         aws_access_key = os.getenv("AWS_S3_ACCESS_KEY_ID") \
             or input_dict.get('aws_access_key')

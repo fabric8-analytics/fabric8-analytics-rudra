@@ -35,7 +35,7 @@ class TestMavenEMR:
                       'data_version': '2019-01-01',
                       'bucket_name': 'fake_bucket',
                       'hyper_params': {"key1": 'value1', 'key2': 'value2'},
-                      'github_repo': 'fabric8-analytics/f8a-hpf-insights'}
+                      'github_repo': 'https://github.com/fabric8-analytics/f8a-hpf-insights'}
         response = maven_emr.run_job(input_dict)
         status_code = response.get(
             'ResponseMetadata', {}).get('HTTPStatusCode')

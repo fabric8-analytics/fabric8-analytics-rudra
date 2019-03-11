@@ -26,7 +26,7 @@ class PyPiEMR(EMRScriptBuilder):
 
         emr_config_obj = EMRConfig(name=name,
                                    s3_bootstrap_uri=bootstrap_uri,
-                                   training_file_url=self.training_file_url,
+                                   training_repo_url=self.training_repo_url,
                                    log_uri=log_uri,
                                    ecosystem=self.ecosystem,
                                    properties=self.properties,
