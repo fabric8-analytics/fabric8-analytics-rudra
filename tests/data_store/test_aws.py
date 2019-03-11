@@ -39,7 +39,7 @@ def s3(request):
 
 @pytest.fixture
 @pytest.mark.usefixtures('s3')
-def upload_dir(request, s3):
+def _upload_dir(request, s3):
     dir_path = Path(__file__).resolve().parents[1]
     test_dir_path = dir_path.joinpath("data").absolute()
     assert test_dir_path.is_dir()
