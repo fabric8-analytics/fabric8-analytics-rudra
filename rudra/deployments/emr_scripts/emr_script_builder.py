@@ -32,8 +32,8 @@ class EMRScriptBuilder(AbstractEMR):
         self.data_version = input_dict.get('data_version')
         github_repo = input_dict.get('github_repo')
         if not check_url_alive(github_repo):
-            raise ValueError("Unable to find the github_repo {}".format(github_repo))
             logger.error("Unable to find the github_repo {}".format(github_repo))
+            raise ValueError("Unable to find the github_repo {}".format(github_repo))
         self.training_repo_url = github_repo
         self.hyper_params = input_dict.get('hyper_params', '{}')
         aws_access_key = os.getenv("AWS_S3_ACCESS_KEY_ID") \
