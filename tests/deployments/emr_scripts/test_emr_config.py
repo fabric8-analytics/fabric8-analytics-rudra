@@ -8,7 +8,7 @@ class TestEMRConfig:
                                    log_uri="s3://fake-bucket/dummy.log",
                                    ecosystem="maven",
                                    s3_bootstrap_uri="s3://fake-bucket/bootstrap.sh",
-                                   training_file_url="https://github.com/train.py",
+                                   training_repo_url="https://github.com/train.py",
                                    instance_count=3,
                                    instance_type='p2.large',
                                    properties={'key1': 'value1'},
@@ -31,7 +31,7 @@ class TestEMRConfig:
         assert bootstrap_file_path == 's3://fake-bucket/bootstrap.sh'
         assert len(emr_config['Steps']) > 0
 
-        assert any(['python3.6' in s["HadoopJarStep"]["Args"] and
+        assert any(['python3.6' in s["HadoopJarStep"]["Args"][0] and
                    '{"a":123}' in s["HadoopJarStep"]["Args"] for s in emr_config['Steps']])
 
         for grp in emr_config['Instances']['InstanceGroups']:

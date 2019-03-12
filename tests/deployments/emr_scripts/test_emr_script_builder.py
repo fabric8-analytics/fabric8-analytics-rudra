@@ -39,7 +39,7 @@ class TestEMRScriptBuilder:
                       'data_version': '2019-01-01',
                       'bucket_name': 'fake_bucket',
                       'hyper_params': {"key1": 'value1', 'key2': 'value2'},
-                      'github_repo': 'fabric8-analytics/f8a-hpf-insights'}
+                      'github_repo': 'https://github.com/fabric8-analytics/f8a-hpf-insights'}
         emr_builder_obj.construct_job(req_params)
         with suppress(FileNotFoundError):
             open('/tmp/rudra.errors.log', 'w').close()
@@ -51,6 +51,6 @@ class TestEMRScriptBuilder:
         assert emr_builder_obj.bucket_name == req_params.get('bucket_name')
         assert emr_builder_obj.hyper_params == json.dumps(req_params.get('hyper_params'),
                                                           separators=(',', ':'))
-        assert requests.get(emr_builder_obj.training_file_url).status_code == 200
+        assert requests.get(emr_builder_obj.training_repo_url).status_code == 200
         assert emr_builder_obj.properties.get('AWS_S3_ACCESS_KEY_ID') == 'fake_id'
         assert emr_builder_obj.properties.get('AWS_S3_SECRET_ACCESS_KEY') == 'fake_secret'
