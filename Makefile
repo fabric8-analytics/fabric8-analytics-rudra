@@ -7,7 +7,7 @@ venv:
 		pip3 install -e .; pip3 install moto==1.3.6
 
 clean:
-	rm -rf venv-test rudra.egg-info && find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
+	rm -rf venv-test && rm -rf rudra.egg-info && find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 
 run_pytest:
 	. venv-test/bin/activate;\

@@ -44,3 +44,29 @@ class TestSimpleMercator:
     def test_get_dependencies_with_no_content(self):
         with pytest.raises(ValueError, match='Empty Content .*'):
             SimpleMercator('')
+
+    def test_find_data_corrupt_pom(self):
+        content = """
+        </project>
+        </project>
+        <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>grp1.id</groupId>
+                        <artifactId>art1.id</artifactId>
+                    </dependency>
+                </dependencies>
+        </dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>grp1.id</groupId>
+                        <artifactId>art1.id</artifactId>
+                    </dependency>
+                </dependencies>
+        </project>
+        """
+        client = SimpleMercator(content)
+        deps = client.get_dependencies()
+        assert len(deps) == 1
+        artifact_ids = [d.artifact_id for d in deps]
+        assert 'art1.id' in artifact_ids

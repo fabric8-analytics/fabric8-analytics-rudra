@@ -20,6 +20,7 @@ class PyPiBigQuery(BigqueryBuilder):
         """Initialize PyPiBigQuery object."""
         super().__init__(*args, **kwargs)
         self.query_job_config.use_legacy_sql = True
+        self.query_job_config.timeout_ms = 60000
 
         self.query = """
             SELECT D.id AS id,
