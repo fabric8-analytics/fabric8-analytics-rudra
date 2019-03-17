@@ -1,14 +1,10 @@
 """Pypi bigquery implementation."""
 import time
-import tempfile
 import os
 from collections import Counter
 
-from pip._vendor.distlib.util import normalize_name
-from pip._internal.req.req_file import parse_requirements
-from pip._internal.download import PipSession
-
 from rudra.data_store.bigquery.base import BigqueryBuilder
+from rudra.utils.pypi_parser import pip_req
 from rudra.data_store.bigquery.base import DataProcessing
 from rudra import logger
 
@@ -91,30 +87,30 @@ class PyPiBigQueryDataProcessing(DataProcessing):
             self.process_queue = list()
             self.responses = list()
             if content:
-                for data in content.splitlines():
-                    if data:
-                        with tempfile.NamedTemporaryFile(delete=True) as _file:
-                            _file.write(data.encode() if isinstance(data, str) else data)
-                            _file.seek(0)
-                            try:
-                                for pkg in parse_requirements(_file.name, session=PipSession()):
-                                    name = normalize_name(pkg.name)
-                                    logger.info("searching pkg:`{}` in Python Package Index \
-                                            Repository" .format(name))
-                                    self.async_fetch(base_url_pypi.format(pkg=name), others=name)
-                            except Exception as _exc:
-                                logger.error("IGNORE: {}".format(_exc))
-                                logger.error("Failed to parse content data {}".format(data))
+                try:
+                    for name in pip_req.parse_requirements(content):
+                        logger.info("searching pkg:`{}` in Python Package Index \
+                                Repository" .format(name))
+                        self.async_fetch(base_url_pypi.format(pkg=name), others=name)
+                except Exception as _exc:
+                    logger.error("IGNORE: {}".format(_exc))
+                    logger.error("Failed to parse content data {}".format(content))
 
-                while not self.is_fetch_done(lambda x: x.result().status_code):
-                    # hold the process until all request finishes.
-                    time.sleep(0.001)
+                try:
+                    while not self.is_fetch_done(lambda x: x.result().status_code):
+                        # hold the process until all request finishes.
+                        time.sleep(0.001)
+                except Exception as _exc:
+                    logger.error("IGNORE: {}".format(_exc))
+                    # discard process_queue
+                    self.process_queue = []
+                    self.responses = []
                 packages = sorted(set(self.handle_response()))
                 if packages:
                     pkg_string = ', '.join(packages)
                     logger.info("PACKAGES: {}".format(pkg_string))
                     self.counter.update([pkg_string])
-                logger.error("Processed content in time: {} process:{}/{}".format(
+                logger.info("Processed content in time: {} process:{}/{}".format(
                     (time.monotonic() - start), idx, len(self.big_query_content)))
         logger.info("Processed All the manifests in time: {}".format(
             time.monotonic() - start_process_time))
