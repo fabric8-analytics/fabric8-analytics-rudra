@@ -13,6 +13,7 @@ chardet==3.0.4
 cookies==2.2.1
 cryptography==2.5
 daiquiri==1.5.0
+demjson==2.2.4
 docker==3.7.0
 docker-pycreds==0.4.0
 docutils==0.14

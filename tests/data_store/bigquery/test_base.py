@@ -23,8 +23,8 @@ class MockDB:
         create table manifests({id} int, {nm} char, {cn} char);
         insert into manifests ({id}, {nm}, {cn}) values (1, 'requirements.txt', '{rq}');
         insert into manifests ({id}, {nm}, {cn}) values (2, 'requirements.txt', '{rq}');
-        insert into manifests ({id}, {nm}, {cn}) values (3, 'packages.json', '{pk}');
-        insert into manifests ({id}, {nm}, {cn}) values (4, 'packages.json', '{pk}');
+        insert into manifests ({id}, {nm}, {cn}) values (3, 'package.json', '{pk}');
+        insert into manifests ({id}, {nm}, {cn}) values (4, 'package.json', '{pk}');
         insert into manifests ({id}, {nm}, {cn}) values (5, 'pom.xml', '{pm}');
         insert into manifests ({id}, {nm}, {cn}) values (6, 'pom.xml', '{pm}');
         """.format(**dict(zip(('id', 'nm', 'cn'), self.cols)),
@@ -38,7 +38,7 @@ class MockDB:
     def manifest_content(self, eco):
         eco_map_manifest = {'pypi': 'requirements.txt',
                             'maven': 'pom.xml',
-                            'npm': 'packages.json'}
+                            'npm': 'package.json'}
 
         dir_path = Path(__file__).resolve().parents[2]
         test_dir_path = dir_path.joinpath("data", eco_map_manifest.get(eco)).absolute()
