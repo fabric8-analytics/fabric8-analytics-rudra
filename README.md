@@ -1,5 +1,5 @@
 ## fabric8-analytics-rudra
-This library is the collection of the common utils and tools required by various fabric8-anlytics machine learning projects.
+This library is the collection of the common utils and tools required by various fabric8-analytics machine learning projects.
 
 ### Installation:
 
