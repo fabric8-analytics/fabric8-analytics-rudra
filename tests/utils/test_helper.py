@@ -1,5 +1,6 @@
 import rudra.utils.helper as helper
 import requests
+import pytest
 
 
 def test_get_github_repo_info():
@@ -40,3 +41,33 @@ def test_load_hyper_params():
     hyper_params = helper.load_hyper_params()
     assert hyper_params.get('a') == 111
     assert hyper_params.get('b') == "some text"
+
+
+def test_cache_dict_with_zero_max_size():
+    cache_dict = helper.CacheDict(0)
+    with pytest.raises(KeyError):
+        cache_dict['key1'] = 'value1'
+    assert len(cache_dict) == 0
+
+
+def test_cache_dict_with_one_max_size():
+    cache_dict = helper.CacheDict(1)
+    cache_dict['key1'] = 'value1'
+    cache_dict['key2'] = 'value2'
+    assert len(cache_dict) == 1
+    assert 'key2' in cache_dict
+    assert 'key1' not in cache_dict
+
+
+def test_cache_dict():
+    # default max_len = 1024
+    cache_dict = helper.CacheDict()
+    for i in range(2000):
+        cache_dict[i] = i * i
+    assert len(cache_dict) == cache_dict.max_len
+    assert cache_dict[i] == i * i
+    del cache_dict[i]
+    assert len(cache_dict) == cache_dict.max_len - 1
+    assert cache_dict[cache_dict.max_len - 2] == pow(cache_dict.max_len - 2, 2)
+    assert len(list(cache_dict)) == cache_dict.max_len - 1
+    assert str(cache_dict.max_len - 2) in str(cache_dict)

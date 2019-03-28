@@ -1,0 +1,10 @@
+boto==2.49.0
+chardet==3.0.4
+cryptography==2.5
+unknown1
+unknown2
+flask
+cookies=2.2.1 # invalid operator
+git+https://github.com/fabric8-analytics/fabric8-analytics-rudra.git
+# some comment 1
+# some comment 2
