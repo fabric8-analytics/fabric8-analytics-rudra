@@ -76,7 +76,7 @@ class MockBigQuery(mock.Mock):
         def __init__(self, *args, **kwargs):
             self._state_flag = False
 
-        def query(self, qry, job_config):
+        def query(self, qry, _job_config):
             self.qry = qry
             return QueryJob(self.qry)
 
@@ -95,7 +95,7 @@ class MockBigQuery(mock.Mock):
 
 @pytest.fixture
 @mock.patch('rudra.data_store.bigquery.base.bigquery', new_callable=MockBigQuery)
-def _builder_client(mock_bigquery_obj):
+def _builder_client(_mock_bigquery_obj):
     from rudra.data_store.bigquery.base import BigqueryBuilder
     _client = BigqueryBuilder()
     _client.query = "select id, name, content from manifests"
