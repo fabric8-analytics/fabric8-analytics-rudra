@@ -76,7 +76,7 @@ class MockBigQuery(mock.Mock):
         def __init__(self, *args, **kwargs):
             self._state_flag = False
 
-        def query(self, qry, _job_config):
+        def query(self, qry, *args, **kwargs):
             self.qry = qry
             return QueryJob(self.qry)
 
