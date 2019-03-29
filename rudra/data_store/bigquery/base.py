@@ -42,6 +42,8 @@ class BigqueryBuilder:
         if self.client and self.query:
             self.job_query_obj = self.client.query(
                 self.query, job_config=job_config)
+            while not self.job_query_obj.done():
+                time.sleep(0.1)
             return self.job_query_obj.job_id
         else:
             raise ValueError

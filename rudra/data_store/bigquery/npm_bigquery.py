@@ -15,14 +15,14 @@ class NpmBigQuery(BigqueryBuilder):
     def __init__(self, *args, **kwargs):
         """Initialize NpmBigQuery object."""
         super().__init__(*args, **kwargs)
-        self.query_job_config.use_legacy_sql = True
+        self.query_job_config.use_legacy_sql = False
         self.query_job_config.use_query_cache = True
         self.query_job_config.timeout_ms = 60000
         self.query = """
             SELECT A.repo_name as repo_name, B.content as content
-            FROM [bigquery-public-data.github_repos.files] AS A
-            INNER JOIN  [bigquery-public-data.github_repos.contents] as B
-            ON A.id=B.id WHERE A.path like 'package.json'
+            FROM `bigquery-public-data.github_repos.files` AS A
+            INNER JOIN  `bigquery-public-data.github_repos.contents` as B
+            ON A.id=B.id WHERE A.path like 'package.json';
         """
 
 

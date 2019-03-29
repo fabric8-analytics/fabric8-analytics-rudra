@@ -15,41 +15,21 @@ class PyPiBigQuery(BigqueryBuilder):
     def __init__(self, *args, **kwargs):
         """Initialize PyPiBigQuery object."""
         super().__init__(*args, **kwargs)
-        self.query_job_config.use_legacy_sql = True
+        self.query_job_config.use_legacy_sql = False
+        self.query_job_config.use_query_cache = True
         self.query_job_config.timeout_ms = 60000
 
         self.query = """
-            SELECT D.id AS id,
-                repo_name,
-                path,
-                content
-            FROM   (SELECT id,
-                        content
-                    FROM   [bigquery-public-data.github_repos.contents]
-                    GROUP  BY id,
-                            content) AS D
-                INNER JOIN (SELECT id,
-                                    C.repo_name AS repo_name,
-                                    path
-                            FROM   (SELECT id,
-                                            repo_name,
-                                            path
-                                    FROM
-                            [bigquery-public-data:github_repos.files]
-                                    WHERE  LOWER(path) LIKE '%requirements.txt'
-                                    GROUP  BY path,
-                                                id,
-                                                repo_name) AS C
-                                    INNER JOIN (SELECT repo_name,
-                                                        language.name
-                                                FROM
-                                    [bigquery-public-data.github_repos.languages]
-                                                WHERE  LOWER(language.name) LIKE
-                                                        '%python%'
-                                                GROUP  BY language.name,
-                                                            repo_name) AS F
-                                            ON C.repo_name = F.repo_name) AS E
-                        ON E.id = D.id
+            SELECT con.content AS content
+            FROM `bigquery-public-data.github_repos.contents` AS con
+            INNER JOIN (SELECT files.id AS idq
+                        FROM `bigquery-public-data.github_repos.languages` AS langs
+                        INNER JOIN `bigquery-public-data.github_repos.files` AS files
+                        ON files.repo_name = langs.repo_name
+                            WHERE REGEXP_CONTAINS(TO_JSON_STRING(language), r'(?i)python')
+                            AND files.path LIKE '%requirements.txt'
+                    ) AS L
+            ON con.id = L.id;
         """
 
 

@@ -60,6 +60,9 @@ class QueryJob:
     def result(self):
         return self.output
 
+    def done(self):
+        return True
+
     def __iter__(self):
         return iter(self.output)
 
