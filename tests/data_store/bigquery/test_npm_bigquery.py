@@ -44,12 +44,12 @@ def _npm_bigquery_client(_mock_bigquery_obj):
 @pytest.fixture
 @mock.patch('rudra.data_store.bigquery.base.bigquery', new_callable=MockBigQuery)
 def _data_process_client(_mock_bigquery_obj):
-    from rudra.data_store.bigquery.npm_bigquery import NpmBigQuery, NpmBQDateProcessing
+    from rudra.data_store.bigquery.npm_bigquery import NpmBigQuery, NpmBQDataProcessing
     _npm_ins = NpmBigQuery()
     s3_client = MockS3(tempfile.mkdtemp())
     _npm_ins.query = "select id, name, content from manifests\
             where name like 'package.json'"
-    _client = NpmBQDateProcessing(_npm_ins, s3_client=s3_client)
+    _client = NpmBQDataProcessing(_npm_ins, s3_client=s3_client)
     return _client, s3_client
 
 

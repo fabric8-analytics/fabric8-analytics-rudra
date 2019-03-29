@@ -26,7 +26,7 @@ class NpmBigQuery(BigqueryBuilder):
         """
 
 
-class NpmBQDateProcessing(DataProcessing):
+class NpmBQDataProcessing(DataProcessing):
     """Implementation data processing for npm bigquery."""
 
     def __init__(self, big_query_instance=None, s3_client=None):
