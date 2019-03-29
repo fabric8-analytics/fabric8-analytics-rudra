@@ -14,20 +14,20 @@ class MavenBigQuery(BigqueryBuilder):
     def __init__(self, *args, **kwargs):
         """Initialize MavenBigQuery object."""
         super().__init__(*args, **kwargs)
-        self.query_job_config.use_legacy_sql = True
+        self.query_job_config.use_legacy_sql = False
         self.query_job_config.use_query_cache = True
         self.query_job_config.timeout_ms = 60000
         self.query = """
             SELECT con.content AS content
-            FROM [bigquery-public-data.github_repos.contents] AS con
+            FROM `bigquery-public-data.github_repos.contents` AS con
             INNER JOIN (SELECT files.id AS id
-                        FROM [bigquery-public-data.github_repos.languages] AS langs
-                        INNER JOIN [bigquery-public-data.github_repos.files] AS files
+                        FROM `bigquery-public-data.github_repos.languages` AS langs
+                        INNER JOIN `bigquery-public-data.github_repos.files` AS files
                         ON files.repo_name = langs.repo_name
-                            WHERE LOWER(langs.language.name) = 'java'
+                            WHERE REGEXP_CONTAINS(TO_JSON_STRING(language), r'(?i)java')
                             AND files.path LIKE '%pom.xml'
                     ) AS L
-            ON con.id = L.id
+            ON con.id = L.id;
         """
 
 
