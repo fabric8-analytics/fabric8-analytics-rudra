@@ -83,14 +83,14 @@ class NpmBQDataProcessing(DataProcessing):
     def handle_corrupt_packagejson(content):
         """Find dependencies from corrupted/invalid package.json."""
         dependencies_pattern = re.compile(
-            'dependencies[\'"](?:|.|\s+):(?:|.|\s+)\{(.*?)\}', flags=re.DOTALL)
+            r'dependencies[\'"](?:|.|\s+):(?:|.|\s+)\{(.*?)\}', flags=re.DOTALL)
         dependencies = list()
         try:
             match = dependencies_pattern.search(content)
             for line in match[1].splitlines():
                 for dep in line.split(','):
-                    dependency_pattern = ("(?:\"|\')(?P<pkg>[^\"]*)(?:\"|\')(?=:)"
-                                          "(?:\:\s*)(?:\"|\')?(?P<ver>.*)(?:\"|\')")
+                    dependency_pattern = (r"(?:\"|\')(?P<pkg>[^\"]*)(?:\"|\')(?=:)"
+                                          r"(?:\:\s*)(?:\"|\')?(?P<ver>.*)(?:\"|\')")
                     matches = re.search(dependency_pattern, dep.strip(), re.MULTILINE | re.DOTALL)
                     if matches:
                         dependencies.append('"{}": "{}"'.format(matches['pkg'], matches['ver']))

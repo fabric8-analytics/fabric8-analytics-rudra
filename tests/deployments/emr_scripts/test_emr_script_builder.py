@@ -25,7 +25,7 @@ class TestEMRScriptBuilder:
         with pytest.raises(ValueError):
             emr_builder_obj.construct_job({})
         with open('/tmp/rudra.errors.log') as logfile:
-            pattern = '(\[missing_fields: (\[.*\])\])'
+            pattern = r'(\[missing_fields: (\[.*\])\])'
             m = re.search(pattern, logfile.read())
             grps = m.groups()
             assert len(grps) > 1
@@ -44,7 +44,7 @@ class TestEMRScriptBuilder:
         with suppress(FileNotFoundError):
             open('/tmp/rudra.errors.log', 'w').close()
         with open('/tmp/rudra.errors.log') as logfile:
-            pattern = '(\[missing_fields: (\[.*\])\])'
+            pattern = r'(\[missing_fields: (\[.*\])\])'
             m = re.search(pattern, logfile.read())
             assert not m
         assert emr_builder_obj.env == req_params.get('environment')

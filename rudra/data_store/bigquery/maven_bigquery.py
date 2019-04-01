@@ -31,7 +31,7 @@ class MavenBigQuery(BigqueryBuilder):
         """
 
 
-class MavenBQDateProcessing(DataProcessing):
+class MavenBQDataProcessing(DataProcessing):
     """Implementation data processing for maven bigquery."""
 
     def __init__(self, big_query_instance=None, s3_client=None):
