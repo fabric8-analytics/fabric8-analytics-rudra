@@ -22,14 +22,15 @@ class PyPiBigQuery(BigqueryBuilder):
         self.query = """
             SELECT con.content AS content
             FROM `bigquery-public-data.github_repos.contents` AS con
-            INNER JOIN (SELECT files.id AS idq
+            INNER JOIN (SELECT files.id AS id
                         FROM `bigquery-public-data.github_repos.languages` AS langs
                         INNER JOIN `bigquery-public-data.github_repos.files` AS files
                         ON files.repo_name = langs.repo_name
                             WHERE REGEXP_CONTAINS(TO_JSON_STRING(language), r'(?i)python')
                             AND files.path LIKE '%requirements.txt'
                     ) AS L
-            ON con.id = L.id;
+            ON con.id = L.id
+            LIMIT 10000;
         """
 
 
