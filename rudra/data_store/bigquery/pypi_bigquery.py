@@ -22,7 +22,7 @@ class PyPiBigQuery(BigqueryBuilder):
         self.query = """
             SELECT con.content AS content
             FROM `bigquery-public-data.github_repos.contents` AS con
-            INNER JOIN (SELECT files.id AS idq
+            INNER JOIN (SELECT files.id AS id
                         FROM `bigquery-public-data.github_repos.languages` AS langs
                         INNER JOIN `bigquery-public-data.github_repos.files` AS files
                         ON files.repo_name = langs.repo_name
