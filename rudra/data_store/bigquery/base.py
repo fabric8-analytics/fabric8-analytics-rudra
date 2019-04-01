@@ -94,8 +94,7 @@ class DataProcessing:
         self.s3_client = s3_client
         self.req_session = FuturesSession(session=Session())
 
-    def async_fetch(self, url, payload={},
-                    headers={"Accept": "application/json"},
+    def async_fetch(self, url,
                     method='GET',
                     others=None):
         """Fetch urls asynchronously."""
@@ -131,9 +130,9 @@ class DataProcessing:
         if self.s3_client is None:
             # creat s3 client if not exists.
             self.s3_client = AmazonS3(
-                    bucket_name=bucket_name,
-                    aws_access_key_id=os.getenv('AWS_S3_ACCESS_KEY_ID'),
-                    aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY'),
+                        bucket_name=bucket_name,
+                        aws_access_key_id=os.getenv('AWS_S3_ACCESS_KEY_ID'),
+                        aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY'),
                     )
             self.s3_client.connect()
 

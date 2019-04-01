@@ -21,7 +21,7 @@ function check_files() {
     for source in $1
     do
         echo "$source"
-        vulture --min-confidence 90 "$source"
+        vulture --min-confidence 90 "$source" --ignore-names args,kwargs
         if [ $? -eq 0 ]
         then
             echo "    Pass"
