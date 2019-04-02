@@ -15,4 +15,13 @@ run_pytest:
 
 test: venv run_pytest clean
 
-.PHONY: install test venv clean run_pytest
+# You can set these variables from the command line.
+SPHINXOPTS    =
+SPHINXBUILD   = sphinx-build
+SOURCEDIR     = docs/source
+BUILDDIR      = docs/build
+
+%: Makefile
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+.PHONY: install test venv clean run_pytest help Makefile
