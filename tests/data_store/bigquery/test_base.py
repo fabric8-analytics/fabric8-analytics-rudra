@@ -7,8 +7,6 @@ from pathlib import Path
 import mock
 import pytest
 
-from rudra.data_store.bigquery.base import DataProcessing
-
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = '/path-to-credentials'
 
 
@@ -150,59 +148,3 @@ class TestBigQueryBuilder:
         assert job_id is not None
         for d in _builder_client:
             assert not set(['id', 'name', 'content']).difference(d)
-
-
-class TestDataProcessing:
-
-    def test_async_fetch(self):
-        dpro = DataProcessing()
-        pkg = 'flask'
-        url = 'https://pypi.org/pypi/{p}/json'.format(p=pkg)
-        dpro.process_queue = list()
-        dpro.responses = list()
-        for _ in range(10):
-            dpro.async_fetch(url, others='flask')
-        assert len(dpro.process_queue) == 10
-        assert len(dpro.responses) == 0
-        while dpro.process_queue:
-            _pkg, _url, _obj = dpro.process_queue[-1]
-            assert _pkg == pkg
-            assert _url == url
-            if _obj.done():
-                code = _obj.result().status_code
-                assert code == 200
-                dpro.process_queue.pop()
-
-    def test_is_fetch_done(self):
-        dpro = DataProcessing()
-        pkg = 'flask'
-        url = 'https://pypi.org/pypi/{p}/json'.format(p=pkg)
-        dpro.process_queue = list()
-        dpro.responses = list()
-        num = 10
-        for _ in range(num):
-            dpro.async_fetch(url, others='flask')
-        assert len(dpro.process_queue) == num
-        assert len(dpro.responses) == 0
-        while not dpro.is_fetch_done(lambda x: x.result().status_code):
-            pq_len = len(dpro.process_queue)
-            if pq_len < num:
-                assert len(dpro.responses) == num - pq_len
-
-    def test_caching(self):
-        dpro = DataProcessing()
-        pkg = 'flask'
-        url = 'https://pypi.org/pypi/{p}/json'.format(p=pkg)
-        dpro.process_queue = list()
-        dpro.responses = list()
-        num = 10000
-        for _ in range(num):
-            dpro.async_fetch(url, others='flask')
-        assert len(dpro.process_queue) == num
-        assert len(dpro.responses) == 0
-        while not dpro.is_fetch_done(lambda x: x.result().status_code):
-            pq_len = len(dpro.process_queue)
-            if pq_len < num:
-                assert len(dpro.responses) == num - pq_len
-                assert url in dpro.cache
-                assert dpro.cache[url] == (pkg, 200)

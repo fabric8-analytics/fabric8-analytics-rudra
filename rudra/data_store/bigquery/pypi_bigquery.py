@@ -6,6 +6,7 @@ from collections import Counter
 from rudra.data_store.bigquery.base import BigqueryBuilder
 from rudra.utils.pypi_parser import pip_req
 from rudra.data_store.bigquery.base import DataProcessing
+from rudra.utils.validation import BQValidation
 from rudra import logger
 
 
@@ -46,52 +47,31 @@ class PyPiBigQueryDataProcessing(DataProcessing):
         self.filename = '{}/big-query-data/collated.json'.format(
             os.getenv('DEPLOYMENT_PREFIX', 'dev'))
 
-    def process(self):
+    def process(self, validate=False):
         """Process Pypi Bigquery response data."""
-        start = time.monotonic()
+        bq_validation = BQValidation()
         logger.info("Running Bigquery for pypi synchronously")
         self.big_query_instance.run_query_sync()
-
-        logger.info("fetching bigquery result.")
-        for content in self.big_query_instance.get_result():
-            self.big_query_content.append(content)
-            logger.info("collected manifests: {}".format(len(self.big_query_content)))
-        logger.info("Succefully retrieved data from Bigquery, time:{}".format(
-            time.monotonic() - start))
-        base_url_pypi = 'https://pypi.org/pypi/{pkg}/json'
-        logger.info("Starting package cleaning")
         start_process_time = time.monotonic()
-        for idx, obj in enumerate(self.big_query_content):
+        for idx, obj in enumerate(self.big_query_instance.get_result()):
             start = time.monotonic()
             content = obj.get('content')
-            self.process_queue = list()
-            self.responses = list()
+            packages = []
             if content:
                 try:
-                    for name in pip_req.parse_requirements(content):
-                        logger.info("searching pkg:`{}` in Python Package Index \
-                                Repository" .format(name))
-                        self.async_fetch(base_url_pypi.format(pkg=name), others=name)
+                    packages = sorted({p for p in pip_req.parse_requirements(content)})
+                    if validate:
+                        packages = sorted(bq_validation.validate_pypi(packages))
                 except Exception as _exc:
                     logger.error("IGNORE: {}".format(_exc))
                     logger.error("Failed to parse content data {}".format(content))
 
-                try:
-                    while not self.is_fetch_done(lambda x: x.result().status_code):
-                        # hold the process until all request finishes.
-                        time.sleep(0.001)
-                except Exception as _exc:
-                    logger.error("IGNORE: {}".format(_exc))
-                    # discard process_queue
-                    self.process_queue = []
-                    self.responses = []
-                packages = sorted(set(self.handle_response()))
                 if packages:
                     pkg_string = ', '.join(packages)
                     logger.info("PACKAGES: {}".format(pkg_string))
                     self.counter.update([pkg_string])
-                logger.info("Processed content in time: {} process:{}/{}".format(
-                    (time.monotonic() - start), idx, len(self.big_query_content)))
+                logger.info("Processed content in time: {} counter:{}".format(
+                    (time.monotonic() - start), idx))
         logger.info("Processed All the manifests in time: {}".format(
             time.monotonic() - start_process_time))
 
@@ -101,18 +81,3 @@ class PyPiBigQueryDataProcessing(DataProcessing):
                               filename=self.filename)
 
         logger.info("Succefully Processed the PyPiBigQuery")
-
-    def handle_response(self):
-        """Process and get the response of async requests."""
-        results = list()
-        for resp in self.responses:
-            pkg_name, req_obj = resp
-            if isinstance(req_obj, int):
-                if req_obj == 200:
-                    results.append(pkg_name)
-            elif req_obj.status_code == 200:
-                results.append(pkg_name)
-                logger.info("Received status:{} for pkg:{}".format(req_obj.status_code, pkg_name))
-            else:
-                logger.info("Received status:{} for pkg:{}".format(req_obj.status_code, pkg_name))
-        return results

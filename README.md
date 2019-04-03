@@ -1,9 +1,7 @@
 ## fabric8-analytics-rudra
-This library is the collection of the common utils and tools required by various fabric8-analytics machine learning projects.
+This library is the collection of the common utils and tools required by various fabric8-analytics machine learning projects. Documentation is available at [fabric8-analytics-rudra Docs](https://fabric8-analytics-rudra.readthedocs.io). Please follow this article  [Docs Examples](https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html) for documenting the code.
 
 ### Installation:
-
-#### 
 
 ```bash
 $ pip install git+https://github.com/fabric8-analytics/fabric8-analytics-rudra
@@ -16,6 +14,14 @@ $ make install
 ### Testing:
 ```bash
 $ make test
+```
+
+### Documentation:
+```bash
+$ export PYTHONPATH=/path/to/fabric8-analytics-rudra
+```
+```bash
+$ make html
 ```
 
 ### Footnotes
@@ -79,4 +85,5 @@ The script named `check-bashscripts.sh` can be used to check all BASH scripts (i
 ```
 
 Please see [the following link](https://github.com/koalaman/shellcheck) for further explanation, how the ShellCheck works and which issues can be detected.
+
 

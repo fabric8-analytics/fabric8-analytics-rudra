@@ -1,14 +1,10 @@
 """Implementation Bigquery builder base."""
 import os
 import time
-from collections import Counter
 
 from google.cloud import bigquery
-from requests import Session
-from requests_futures.sessions import FuturesSession
 
 from rudra import logger
-from rudra.utils.helper import CacheDict
 from rudra.data_store.aws import AmazonS3
 
 
@@ -88,40 +84,7 @@ class DataProcessing:
 
     def __init__(self, s3_client=None):
         """Initialize DataProcessing object."""
-        self.data = None
-        self.cache = CacheDict(max_len=50000)
-        self.pkg_counter = Counter()
         self.s3_client = s3_client
-        self.req_session = FuturesSession(session=Session())
-
-    def async_fetch(self, url,
-                    method='GET',
-                    others=None):
-        """Fetch urls asynchronously."""
-        if url in self.cache:
-            self.responses.append(self.cache[url])
-        else:
-            self.process_queue.append(
-                (others, url, self.req_session.request(method, url)))
-
-    def is_fetch_done(self, callback=lambda x: x):
-        """Check whether all the requests are processed or not."""
-        _flag = True
-        for resp in self.process_queue:
-            _flag = False
-            others, url, req_obj = resp
-            logger.info("other:{}, url:{}, req_obj:{}".format(others, url, req_obj))
-
-            if url in self.cache:
-                req_obj.cancel()
-                self.process_queue.remove(resp)
-                self.responses.append(self.cache[url])
-            elif req_obj.done():
-                req_obj.cancel()
-                self.process_queue.remove(resp)
-                self.cache[url] = (others, callback(req_obj))
-                self.responses.append((others, callback(req_obj)))
-        return _flag
 
     def update_s3_bucket(self, data,
                          bucket_name,

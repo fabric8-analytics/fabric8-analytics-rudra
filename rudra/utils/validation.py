@@ -1,7 +1,9 @@
 """Validation Utility module."""
 
 import urllib.request as request
+import xmlrpc.client as xmlrpclib
 from rudra import logger
+from pip._vendor.distlib.util import normalize_name as nn
 
 
 def check_field_exists(input_data, fields):
@@ -27,3 +29,33 @@ def check_url_alive(url, accept_codes=[401]):
     except Exception as exc:
         logger.debug("Unable to reach url", extra={"exception": str(exc)})
     return False
+
+
+class BQValidation:
+    """Add validation for ecosystems."""
+
+    def __init__(self):
+        """Initialize the BQValidation object."""
+        pypi_org = xmlrpclib.ServerProxy('https://pypi.python.org/pypi')
+        self.pypi_org_packages = {nn(p) for p in pypi_org.list_packages()}
+
+    def validate_pypi(self, content):
+        """Validate python packages.
+
+        Attributes:
+            content (:obj:`str` or [:obj:`str`] or {:obj:`str`}):
+                list/set of packages or package str
+
+        Returns:
+            [:obj:`str`]: list of valid packages.
+
+        Raises:
+            ValueError: if content is not a type of :obj:`str` or :obj:`list`
+
+        """
+        if not isinstance(content, (str, list, set, frozenset)):
+            raise ValueError("content type should be string or set/list of string")
+
+        content = [content] if isinstance(content, str) else content
+
+        return list(self.pypi_org_packages.intersection(content))

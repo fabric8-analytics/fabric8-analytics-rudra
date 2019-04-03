@@ -1,4 +1,4 @@
-from rudra.utils.validation import check_field_exists, check_url_alive
+from rudra.utils.validation import check_field_exists, check_url_alive, BQValidation
 import pytest
 
 
@@ -20,3 +20,20 @@ def test_check_url_alive():
     assert check_url_alive(url)
     url = 'https://234j23ksadasca.com'
     assert not check_url_alive(url)
+
+
+class TestBQValidation:
+
+    @staticmethod
+    def test_validate_pypi_content():
+        bq_validation = BQValidation()
+        content = 'flask'
+        assert not set(bq_validation.validate_pypi(content)).difference([content])
+        content = ['flask', 'django', 'unknownpkg']
+        assert not set(['flask', 'django']).difference(bq_validation.validate_pypi(content))
+        content = {'flask', 'django'}
+        assert not content.difference(bq_validation.validate_pypi(content))
+        content = frozenset(['flask', 'django'])
+        assert not content.difference(bq_validation.validate_pypi(content))
+        with pytest.raises(ValueError):
+            bq_validation.validate_pypi({"name": "flask"})

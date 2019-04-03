@@ -91,9 +91,9 @@ class TestPyPiBigQuery:
 
 
 class TestPyPiDataProcessing:
-    def test_process(self, _data_process_client):
+    def test_process_with_validation(self, _data_process_client):
         dp_client, s3_client = _data_process_client
-        dp_client.process()
+        dp_client.process(validate=True)
         data = s3_client.read_json_file(dp_client.filename)
         assert 'pypi' in data
         assert len(data['pypi']) > 0
@@ -101,12 +101,18 @@ class TestPyPiDataProcessing:
             assert 'boto' in k
             assert 'chardet' in k
             assert 'flask' in k
+            assert 'unknown1' not in k
             assert v == 2
 
-    def test_handle_response(self, _data_process_client):
+    def test_process_without_validation(self, _data_process_client):
         dp_client, s3_client = _data_process_client
-        dp_client.responses = [
-            ('flask', 200), ('django', type('Request', (), {"status_code": 200}))]
-        result = dp_client.handle_response()
-        assert len(result) == 2
-        assert 'flask' in result and 'django' in result
+        dp_client.process(validate=False)
+        data = s3_client.read_json_file(dp_client.filename)
+        assert 'pypi' in data
+        assert len(data['pypi']) > 0
+        for k, v in data['pypi'].items():
+            assert 'boto' in k
+            assert 'chardet' in k
+            assert 'flask' in k
+            assert 'unknown1'in k
+            assert v == 2
