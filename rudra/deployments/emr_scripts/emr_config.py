@@ -50,7 +50,8 @@ class EMRConfig:
         self.instance_type_properties = {
             "LC_ALL": "en_US.UTF-8",
             "LANG": "en_US.UTF-8",
-            "PYTHONPATH": "{}/repo/training".format(self.home_dir)
+            "PYTHONPATH": "{}/repo".format(self.home_dir),
+            "PYTHONUNBUFFERED": "0"
         }
         self.instance_type_properties.update(properties)
 
