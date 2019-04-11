@@ -3,8 +3,14 @@
 import urllib.request as request
 import xmlrpc.client as xmlrpclib
 from rudra import logger
-from pip._vendor.distlib.util import normalize_name as nn
+import re
+_canonicalize_regex = re.compile(r"[-_.]+")
 
+
+def nn(name):
+    """Returns a normalized name."""
+    # This is taken from PEP 503.
+    return _canonicalize_regex.sub("-", name).lower()
 
 def check_field_exists(input_data, fields):
     """Check field exist in the input data."""
