@@ -1,7 +1,8 @@
 """Implementation Bigquery builder base."""
 import os
 import time
-
+import tempfile
+import json
 from google.cloud import bigquery
 
 from rudra import logger
@@ -16,10 +17,25 @@ class BigqueryBuilder:
 
     def __init__(self, query_job_config=None, credential_path=None):
         """Initialize the BigqueryBuilder object."""
-        self.credential_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS')\
-            or credential_path
+        self.original_credential_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS') \
+                               or credential_path
 
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.credential_path
+        try:
+            json.loads(self.original_credential_path)
+            json_credentials = True
+        except Exception as e:
+            logger.error("Credential file parsing exception: {}".format(e))
+            json_credentials = False
+
+        if json_credentials:
+            tfile = tempfile.NamedTemporaryFile(mode='w+', delete=False)
+            tfile.write(self.original_credential_path)
+            tfile.flush()
+            tfile.seek(0)
+            self.new_credential_path = tfile.name
+            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.new_credential_path
+        else:
+            self.new_credential_path = self.original_credential_path
 
         if isinstance(query_job_config, bigquery.job.QueryJobConfig):
             self.query_job_config = query_job_config
@@ -28,7 +44,7 @@ class BigqueryBuilder:
 
         self.client = None
 
-        if self.credential_path:
+        if self.new_credential_path:
             self.client = bigquery.Client(
                 default_query_job_config=self.query_job_config)
         else:
@@ -93,10 +109,10 @@ class DataProcessing:
         if self.s3_client is None:
             # creat s3 client if not exists.
             self.s3_client = AmazonS3(
-                        bucket_name=bucket_name,
-                        aws_access_key_id=os.getenv('AWS_S3_ACCESS_KEY_ID'),
-                        aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY'),
-                    )
+                bucket_name=bucket_name,
+                aws_access_key_id=os.getenv('AWS_S3_ACCESS_KEY_ID'),
+                aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY'),
+            )
             self.s3_client.connect()
 
         if not self.s3_client.is_connected():
