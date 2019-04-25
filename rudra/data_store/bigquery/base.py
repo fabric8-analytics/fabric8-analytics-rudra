@@ -24,7 +24,7 @@ class BigqueryBuilder:
             json.loads(self.original_credential_path)
             json_credentials = True
         except Exception as e:
-            logger.error("Credential file parsing exception: {}".format(e))
+            logger.error("Not JSON credentials, reverting to local env JSON file: {}".format(e))
             json_credentials = False
 
         if json_credentials:
@@ -111,10 +111,10 @@ class DataProcessing:
             self.s3_client = AmazonS3(
                 bucket_name=bucket_name,
                 aws_access_key_id=os.getenv('AWS_S3_ACCESS_KEY_ID'),
-                aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY'),
+                aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY')
             )
-            self.s3_client.connect()
-
+        # connect after creating or with existing s3 client
+        self.s3_client.connect()
         if not self.s3_client.is_connected():
             raise ValueError("Unable to connect to s3.")
 
