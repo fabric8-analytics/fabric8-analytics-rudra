@@ -31,6 +31,9 @@ class MockS3(LocalDataStore):
     def __del__(self):
         shutil.rmtree(self.src_dir)
 
+    def connect(self):
+        self.is_connected()
+
 
 @pytest.fixture
 @mock.patch('rudra.data_store.bigquery.base.bigquery', new_callable=MockBigQuery)
