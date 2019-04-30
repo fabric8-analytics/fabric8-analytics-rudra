@@ -37,15 +37,16 @@ class PyPiBigQuery(BigqueryBuilder):
 class PyPiBigQueryDataProcessing(DataProcessing):
     """Implementation data processing for pypi bigquery."""
 
-    def __init__(self, big_query_instance=None, s3_client=None):
+    def __init__(self, big_query_instance=None, s3_client=None,
+                 file_name='collated.json'):
         """Initialize the BigQueryDataProcessing object."""
         super().__init__(s3_client)
         self.big_query_instance = big_query_instance or PyPiBigQuery()
         self.big_query_content = list()
         self.counter = Counter()
         self.bucket_name = 'developer-analytics-audit-report'
-        self.filename = '{}/big-query-data/collated.json'.format(
-            os.getenv('DEPLOYMENT_PREFIX', 'dev'))
+        self.filename = '{}/big-query-data/{}'.format(
+            os.getenv('DEPLOYMENT_PREFIX', 'dev'), file_name)
 
     def process(self, validate=False):
         """Process Pypi Bigquery response data."""
@@ -59,12 +60,15 @@ class PyPiBigQueryDataProcessing(DataProcessing):
             packages = []
             if content:
                 try:
-                    packages = sorted({p for p in pip_req.parse_requirements(content)})
+                    packages = sorted(
+                        {p for p in pip_req.parse_requirements(content)})
                     if validate:
-                        packages = sorted(bq_validation.validate_pypi(packages))
+                        packages = sorted(
+                            bq_validation.validate_pypi(packages))
                 except Exception as _exc:
                     logger.error("IGNORE: {}".format(_exc))
-                    logger.error("Failed to parse content data {}".format(content))
+                    logger.error(
+                        "Failed to parse content data {}".format(content))
 
                 if packages:
                     pkg_string = ', '.join(packages)
