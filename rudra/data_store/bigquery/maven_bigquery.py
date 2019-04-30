@@ -34,15 +34,16 @@ class MavenBigQuery(BigqueryBuilder):
 class MavenBQDataProcessing(DataProcessing):
     """Implementation data processing for maven bigquery."""
 
-    def __init__(self, big_query_instance=None, s3_client=None):
+    def __init__(self, big_query_instance=None, s3_client=None,
+                 file_name='collated.json'):
         """Initialize the BigQueryDataProcessing object."""
         super().__init__(s3_client)
         self.big_query_instance = big_query_instance or MavenBigQuery()
         self.big_query_content = list()
         self.counter = Counter()
         self.bucket_name = 'developer-analytics-audit-report'
-        self.filename = '{}/big-query-data/collated.json'.format(
-            os.getenv('DEPLOYMENT_PREFIX', 'dev'))
+        self.filename = '{}/big-query-data/{}'.format(
+            os.getenv('DEPLOYMENT_PREFIX', 'dev'), file_name)
 
     def process(self):
         """Process Maven Bigquery response data."""
@@ -52,7 +53,8 @@ class MavenBQDataProcessing(DataProcessing):
         self.big_query_instance.run_query_sync()
         for content in self.big_query_instance.get_result():
             logger.info("processing bigquery result. {}".format(_processed))
-            packages = sorted(set(self.construct_packages(content.get('content'))))
+            packages = sorted(
+                set(self.construct_packages(content.get('content'))))
             if packages:
                 pkg_string = ', '.join(packages)
                 logger.info("PACKAGES: {}".format(pkg_string))
@@ -76,10 +78,12 @@ class MavenBQDataProcessing(DataProcessing):
         try:
             mercator_ins = SimpleMercator(content)
             for dep in mercator_ins.get_dependencies():
-                scope, aid, gid = str(dep.scope), str(dep.artifact_id), str(dep.group_id)
+                scope, aid, gid = str(dep.scope), str(
+                    dep.artifact_id), str(dep.group_id)
 
                 if scope in allowed_scopes and aid and gid:
-                    result.append('{g}:{a}'.format(g=gid.strip(), a=aid.strip()))
+                    result.append('{g}:{a}'.format(
+                        g=gid.strip(), a=aid.strip()))
         except Exception as _exc:
             logger.warn("IGNORE THIS ERROR {}".format(_exc))
             logger.warn("CONTENT: {}".format(content))

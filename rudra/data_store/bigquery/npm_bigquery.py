@@ -29,15 +29,16 @@ class NpmBigQuery(BigqueryBuilder):
 class NpmBQDataProcessing(DataProcessing):
     """Implementation data processing for npm bigquery."""
 
-    def __init__(self, big_query_instance=None, s3_client=None):
+    def __init__(self, big_query_instance=None, s3_client=None,
+                 file_name='collated.json'):
         """Initialize the BigQueryDataProcessing object."""
         super().__init__(s3_client)
         self.big_query_instance = big_query_instance or NpmBigQuery()
         self.big_query_content = list()
         self.counter = Counter()
         self.bucket_name = 'developer-analytics-audit-report'
-        self.filename = '{}/big-query-data/collated.json'.format(
-            os.getenv('DEPLOYMENT_PREFIX', 'dev'))
+        self.filename = '{}/big-query-data/{}'.format(
+            os.getenv('DEPLOYMENT_PREFIX', 'dev'), file_name)
 
     def process(self):
         """Process Npm Bigquery response data."""
@@ -48,7 +49,8 @@ class NpmBQDataProcessing(DataProcessing):
         for content in self.big_query_instance.get_result():
             logger.info("processing bigquery result. {}".format(_processed))
             if content:
-                packages = sorted(set(self.construct_packages(content.get('content'))))
+                packages = sorted(
+                    set(self.construct_packages(content.get('content'))))
                 if packages:
                     pkg_string = ', '.join(packages)
                     logger.info("PACKAGES: {}".format(pkg_string))
@@ -91,9 +93,11 @@ class NpmBQDataProcessing(DataProcessing):
                 for dep in line.split(','):
                     dependency_pattern = (r"(?:\"|\')(?P<pkg>[^\"]*)(?:\"|\')(?=:)"
                                           r"(?:\:\s*)(?:\"|\')?(?P<ver>.*)(?:\"|\')")
-                    matches = re.search(dependency_pattern, dep.strip(), re.MULTILINE | re.DOTALL)
+                    matches = re.search(dependency_pattern,
+                                        dep.strip(), re.MULTILINE | re.DOTALL)
                     if matches:
-                        dependencies.append('"{}": "{}"'.format(matches['pkg'], matches['ver']))
+                        dependencies.append('"{}": "{}"'.format(
+                            matches['pkg'], matches['ver']))
 
             return demjson.decode('{"dependencies": {%s}}' % ', '.join(dependencies))
         except Exception as _exc:
