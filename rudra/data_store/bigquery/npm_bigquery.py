@@ -36,9 +36,7 @@ class NpmBQDataProcessing(DataProcessing):
         self.big_query_instance = big_query_instance or NpmBigQuery()
         self.big_query_content = list()
         self.counter = Counter()
-        self.bucket_name = self.s3_client.bucket_name\
-            if self.s3_client.bucket_name\
-                else 'developer-analytics-audit-report'
+        self.bucket_name = self.s3_client.bucket_name or 'developer-analytics-audit-report'
         self.filename = '{}/big-query-data/{}'.format(
             os.getenv('DEPLOYMENT_PREFIX', 'dev'), file_name)
 
