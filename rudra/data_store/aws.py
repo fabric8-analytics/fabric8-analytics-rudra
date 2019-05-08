@@ -41,13 +41,13 @@ class AmazonS3(AbstractDataStore):
         """Initialize object, setup connection to the AWS S3."""
         self._s3 = None
 
-        self.region_name = os.getenv(
-            'AWS_S3_REGION') or region_name or self._DEFAULT_REGION_NAME
+        self.region_name = region_name or os.getenv(
+            'AWS_S3_REGION') or self._DEFAULT_REGION_NAME
         self.bucket_name = bucket_name
-        self._aws_access_key_id = os.getenv(
-            'AWS_S3_ACCESS_KEY_ID') or aws_access_key_id
+        self._aws_access_key_id = aws_access_key_id or os.getenv(
+            'AWS_S3_ACCESS_KEY_ID')
         self._aws_secret_access_key = \
-            os.getenv('AWS_S3_SECRET_ACCESS_KEY') or aws_secret_access_key
+            aws_secret_access_key or os.getenv('AWS_S3_SECRET_ACCESS_KEY')
 
         self._local_dev = local_dev
         # let boto3 decide if we don't have local development proper values
