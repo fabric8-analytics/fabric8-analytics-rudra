@@ -15,6 +15,8 @@ class MavenEMR(EMRScriptBuilder):
         name = '{}_{}_training_{}'.format(
             self.env, self.ecosystem, self.current_time)
 
+        logger.info("EMR job with name {}".format(name))
+
         bootstrap_uri = 's3://{bucket}/bootstrap.sh'.format(
             bucket=self.bucket_name)
 
