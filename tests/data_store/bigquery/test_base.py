@@ -106,7 +106,7 @@ def _builder_client(_mock_bigquery_obj):
 class TestBigQueryBuilder:
 
     def test_init(self, _builder_client):
-        assert _builder_client.new_credential_path == os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
+        assert _builder_client.credential_path == os.getenv('GOOGLE_APPLICATION_CREDENTIALS')
         assert isinstance(_builder_client.query_job_config, MockBigQuery.Job.QueryJobConfig)
 
     def test_run_query(self, _builder_client):
