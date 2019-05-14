@@ -30,7 +30,7 @@ class PyPiBigQuery(BigqueryBuilder):
                             WHERE REGEXP_CONTAINS(TO_JSON_STRING(language), r'(?i)python')
                             AND files.path LIKE '%requirements.txt'
                     ) AS L
-            ON con.id = L.id limit 50;
+            ON con.id = L.id;
         """
 
 

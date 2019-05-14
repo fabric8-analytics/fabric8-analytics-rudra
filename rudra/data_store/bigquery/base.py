@@ -135,8 +135,7 @@ class DataProcessing:
             self.s3_client = AmazonS3(
                 bucket_name=bucket_name,
                 aws_access_key_id=os.getenv('AWS_S3_ACCESS_KEY_ID'),
-                aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY'), 
-                local_dev=True
+                aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY')
             )
         # connect after creating or with existing s3 client
         self.s3_client.connect()
