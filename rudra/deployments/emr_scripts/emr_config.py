@@ -15,7 +15,6 @@ class EMRConfig:
         self.instances = {
             'KeepJobFlowAliveWhenNoSteps': False,
             'TerminationProtected': False,
-            'Ec2SubnetId': 'subnet-50271f16',
             'Ec2KeyName': 'Zeppelin2Spark',
             'InstanceGroups': []
         }
