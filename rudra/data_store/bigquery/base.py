@@ -17,25 +17,49 @@ class BigqueryBuilder:
 
     def __init__(self, query_job_config=None, credential_path=None):
         """Initialize the BigqueryBuilder object."""
-        self.original_credential_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS') \
-                               or credential_path
+        logger.info("Creating BigQuery Auth Credentials")
+        gcp_type = os.getenv("GCP_TYPE", "")
+        gcp_project_id = os.getenv("GCP_PROJECT_ID", "")
+        gcp_private_key_id = os.getenv("GCP_PRIVATE_KEY_ID", "")
+        gcp_private_key = os.getenv("GCP_PRIVATE_KEY", "")
+        gcp_client_email = os.getenv("GCP_CLIENT_EMAIL", "")
+        gcp_client_id = os.getenv("GCP_CLIENT_ID", "")
+        gcp_auth_uri = os.getenv("GCP_AUTH_URI", "")
+        gcp_token_uri = os.getenv("GCP_TOKEN_URI", "")
+        gcp_auth_provider_cert_url = os.getenv("GCP_AUTH_PROVIDER_X509_CERT_URL", "")
+        gcp_client_url = os.getenv("GCP_CLIENT_X509_CERT_URL", "")
 
-        try:
-            json.loads(self.original_credential_path)
-            json_credentials = True
-        except Exception as e:
-            logger.error("Not JSON credentials, reverting to local env JSON file: {}".format(e))
-            json_credentials = False
-
-        if json_credentials:
-            tfile = tempfile.NamedTemporaryFile(mode='w+', delete=False)
-            tfile.write(self.original_credential_path)
-            tfile.flush()
-            tfile.seek(0)
-            self.new_credential_path = tfile.name
-            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.new_credential_path
-        else:
-            self.new_credential_path = self.original_credential_path
+        key_file_contents = \
+            """
+            {{
+              "type": "{type}",
+              "project_id": "{project_id}",
+              "private_key_id": "{private_key_id}",
+              "private_key": "{private_key}",
+              "client_email": "{client_email}",
+              "client_id": "{client_id}",
+              "auth_uri": "{auth_uri}",
+              "token_uri": "{token_uri}",
+              "auth_provider_x509_cert_url": "{auth_provider_cert_url}",
+              "client_x509_cert_url": "{client_url}"
+            }}
+            """.format(type=gcp_type,
+                       project_id=gcp_project_id,
+                       private_key_id=gcp_private_key_id,
+                       private_key=gcp_private_key,
+                       client_email=gcp_client_email,
+                       client_id=gcp_client_id,
+                       auth_uri=gcp_auth_uri,
+                       token_uri=gcp_token_uri,
+                       auth_provider_cert_url=gcp_auth_provider_cert_url,
+                       client_url=gcp_client_url)
+        logger.info('Storing BigQuery Auth Credentials')
+        tfile = tempfile.NamedTemporaryFile(mode='w+', delete=False)
+        tfile.write(key_file_contents)
+        tfile.flush()
+        tfile.seek(0)
+        self.credential_path = tfile.name
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.credential_path
 
         if isinstance(query_job_config, bigquery.job.QueryJobConfig):
             self.query_job_config = query_job_config
@@ -44,7 +68,7 @@ class BigqueryBuilder:
 
         self.client = None
 
-        if self.new_credential_path:
+        if self.credential_path:
             self.client = bigquery.Client(
                 default_query_job_config=self.query_job_config)
         else:
@@ -111,7 +135,8 @@ class DataProcessing:
             self.s3_client = AmazonS3(
                 bucket_name=bucket_name,
                 aws_access_key_id=os.getenv('AWS_S3_ACCESS_KEY_ID'),
-                aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY')
+                aws_secret_access_key=os.getenv('AWS_S3_SECRET_ACCESS_KEY'), 
+                local_dev=True
             )
         # connect after creating or with existing s3 client
         self.s3_client.connect()
