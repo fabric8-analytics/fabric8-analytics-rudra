@@ -30,7 +30,7 @@ class PyPiBigQuery(BigqueryBuilder):
                             WHERE REGEXP_CONTAINS(TO_JSON_STRING(language), r'(?i)python')
                             AND files.path LIKE '%requirements.txt'
                     ) AS L
-            ON con.id = L.id;
+            ON con.id = L.id limit 50;
         """
 
 
@@ -44,7 +44,8 @@ class PyPiBigQueryDataProcessing(DataProcessing):
         self.big_query_instance = big_query_instance or PyPiBigQuery()
         self.big_query_content = list()
         self.counter = Counter()
-        self.bucket_name = self.s3_client.bucket_name or 'developer-analytics-audit-report'
+        self.bucket_name = self.s3_client.bucket_name \
+            if self.s3_client else'developer-analytics-audit-report'
         self.filename = '{}/big-query-data/{}'.format(
             os.getenv('DEPLOYMENT_PREFIX', 'dev'), file_name)
 
