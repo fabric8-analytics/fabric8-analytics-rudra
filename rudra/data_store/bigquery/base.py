@@ -15,7 +15,7 @@ _POLLING_DELAY = 1  # sec
 class BigqueryBuilder:
     """BigqueryBuilder class Implementation."""
 
-    def __init__(self, query_job_config=None, credential_path=None):
+    def __init__(self, query_job_config=None):
         """Initialize the BigqueryBuilder object."""
         logger.info("Creating BigQuery Auth Credentials")
         gcp_type = os.getenv("GCP_TYPE", "")
