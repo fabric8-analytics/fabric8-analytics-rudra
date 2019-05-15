@@ -17,6 +17,7 @@ class MockS3(LocalDataStore):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.is_connected = lambda: True
+        self.bucket_name = 'developer-analytics-audit-report'
 
     def object_exists(self, fname):
         return pathlib.Path(self.src_dir).joinpath(fname).exists()

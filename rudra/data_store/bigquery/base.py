@@ -15,27 +15,16 @@ _POLLING_DELAY = 1  # sec
 class BigqueryBuilder:
     """BigqueryBuilder class Implementation."""
 
-    def __init__(self, query_job_config=None, credential_path=None):
+    def __init__(self, query_job_config=None):
         """Initialize the BigqueryBuilder object."""
-        self.original_credential_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS') \
-                               or credential_path
-
-        try:
-            json.loads(self.original_credential_path)
-            json_credentials = True
-        except Exception as e:
-            logger.error("Not JSON credentials, reverting to local env JSON file: {}".format(e))
-            json_credentials = False
-
-        if json_credentials:
-            tfile = tempfile.NamedTemporaryFile(mode='w+', delete=False)
-            tfile.write(self.original_credential_path)
-            tfile.flush()
-            tfile.seek(0)
-            self.new_credential_path = tfile.name
-            os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.new_credential_path
-        else:
-            self.new_credential_path = self.original_credential_path
+        logger.info('Storing BigQuery Auth Credentials')
+        key_file_contents = self._generate_bq_credentials()
+        tfile = tempfile.NamedTemporaryFile(mode='w+', delete=True)
+        tfile.write(key_file_contents)
+        tfile.flush()
+        tfile.seek(0)
+        self.credential_path = tfile.name
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.credential_path
 
         if isinstance(query_job_config, bigquery.job.QueryJobConfig):
             self.query_job_config = query_job_config
@@ -44,11 +33,53 @@ class BigqueryBuilder:
 
         self.client = None
 
-        if self.new_credential_path:
+        if self.credential_path:
             self.client = bigquery.Client(
                 default_query_job_config=self.query_job_config)
         else:
             raise ValueError("Please provide the the valid credential_path")
+        tfile.close()
+
+    def _generate_bq_credentials(self):
+        """Create BigQuery Auth Credentials."""
+        logger.info("Creating BigQuery Auth Credentials")
+        gcp_type = os.getenv("GCP_TYPE", "")
+        gcp_project_id = os.getenv("GCP_PROJECT_ID", "")
+        gcp_private_key_id = os.getenv("GCP_PRIVATE_KEY_ID", "")
+        gcp_private_key = os.getenv("GCP_PRIVATE_KEY", "")
+        gcp_client_email = os.getenv("GCP_CLIENT_EMAIL", "")
+        gcp_client_id = os.getenv("GCP_CLIENT_ID", "")
+        gcp_auth_uri = os.getenv("GCP_AUTH_URI", "")
+        gcp_token_uri = os.getenv("GCP_TOKEN_URI", "")
+        gcp_auth_provider_cert_url = os.getenv(
+            "GCP_AUTH_PROVIDER_X509_CERT_URL", "")
+        gcp_client_url = os.getenv("GCP_CLIENT_X509_CERT_URL", "")
+
+        key_file_contents = \
+            """
+            {{
+              "type": "{type}",
+              "project_id": "{project_id}",
+              "private_key_id": "{private_key_id}",
+              "private_key": "{private_key}",
+              "client_email": "{client_email}",
+              "client_id": "{client_id}",
+              "auth_uri": "{auth_uri}",
+              "token_uri": "{token_uri}",
+              "auth_provider_x509_cert_url": "{auth_provider_cert_url}",
+              "client_x509_cert_url": "{client_url}"
+            }}
+            """.format(type=gcp_type,
+                       project_id=gcp_project_id,
+                       private_key_id=gcp_private_key_id,
+                       private_key=gcp_private_key,
+                       client_email=gcp_client_email,
+                       client_id=gcp_client_id,
+                       auth_uri=gcp_auth_uri,
+                       token_uri=gcp_token_uri,
+                       auth_provider_cert_url=gcp_auth_provider_cert_url,
+                       client_url=gcp_client_url)
+        return key_file_contents
 
     def _run_query(self, job_config=None):
         if self.client and self.query:
