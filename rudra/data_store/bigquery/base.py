@@ -17,6 +17,31 @@ class BigqueryBuilder:
 
     def __init__(self, query_job_config=None):
         """Initialize the BigqueryBuilder object."""
+        logger.info('Storing BigQuery Auth Credentials')
+        key_file_contents = self._generate_bq_credentials()
+        tfile = tempfile.NamedTemporaryFile(mode='w+', delete=True)
+        tfile.write(key_file_contents)
+        tfile.flush()
+        tfile.seek(0)
+        self.credential_path = tfile.name
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.credential_path
+
+        if isinstance(query_job_config, bigquery.job.QueryJobConfig):
+            self.query_job_config = query_job_config
+        else:
+            self.query_job_config = bigquery.job.QueryJobConfig()
+
+        self.client = None
+
+        if self.credential_path:
+            self.client = bigquery.Client(
+                default_query_job_config=self.query_job_config)
+        else:
+            raise ValueError("Please provide the the valid credential_path")
+        tfile.close()
+
+    def _generate_bq_credentials(self):
+        """Create BigQuery Auth Credentials."""
         logger.info("Creating BigQuery Auth Credentials")
         gcp_type = os.getenv("GCP_TYPE", "")
         gcp_project_id = os.getenv("GCP_PROJECT_ID", "")
@@ -26,7 +51,8 @@ class BigqueryBuilder:
         gcp_client_id = os.getenv("GCP_CLIENT_ID", "")
         gcp_auth_uri = os.getenv("GCP_AUTH_URI", "")
         gcp_token_uri = os.getenv("GCP_TOKEN_URI", "")
-        gcp_auth_provider_cert_url = os.getenv("GCP_AUTH_PROVIDER_X509_CERT_URL", "")
+        gcp_auth_provider_cert_url = os.getenv(
+            "GCP_AUTH_PROVIDER_X509_CERT_URL", "")
         gcp_client_url = os.getenv("GCP_CLIENT_X509_CERT_URL", "")
 
         key_file_contents = \
@@ -53,26 +79,7 @@ class BigqueryBuilder:
                        token_uri=gcp_token_uri,
                        auth_provider_cert_url=gcp_auth_provider_cert_url,
                        client_url=gcp_client_url)
-        logger.info('Storing BigQuery Auth Credentials')
-        tfile = tempfile.NamedTemporaryFile(mode='w+', delete=False)
-        tfile.write(key_file_contents)
-        tfile.flush()
-        tfile.seek(0)
-        self.credential_path = tfile.name
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = self.credential_path
-
-        if isinstance(query_job_config, bigquery.job.QueryJobConfig):
-            self.query_job_config = query_job_config
-        else:
-            self.query_job_config = bigquery.job.QueryJobConfig()
-
-        self.client = None
-
-        if self.credential_path:
-            self.client = bigquery.Client(
-                default_query_job_config=self.query_job_config)
-        else:
-            raise ValueError("Please provide the the valid credential_path")
+        return key_file_contents
 
     def _run_query(self, job_config=None):
         if self.client and self.query:
