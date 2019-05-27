@@ -1,6 +1,6 @@
 #!/bin/bash
 
-directories="rudra tests"
+directories="rudra tests tools"
 separate_files="setup.py"
 
 pass=0
