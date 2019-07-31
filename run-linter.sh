@@ -1,7 +1,13 @@
 #!/bin/bash
 
-directories="rudra tests tools"
-separate_files="setup.py"
+IFS=$'\n'
+
+# list of directories with sources to check
+directories=$(cat directories.txt)
+
+# list of separate files to check
+separate_files=$(cat files.txt)
+
 pass=0
 fail=0
 
@@ -9,7 +15,7 @@ function prepare_venv() {
     VIRTUALENV=$(which virtualenv) || :
     if [ -z "$VIRTUALENV" ]; then
         # python34 which is in CentOS does not have virtualenv binary
-        VIRTUALENV=$(which virtualenv-3)
+        VIRTUALENV="$(which virtualenv-3)"
     fi
 
     ${VIRTUALENV} -p python3 venv && source venv/bin/activate && python3 "$(which pip3)" install pycodestyle
@@ -47,7 +53,7 @@ done
 echo
 echo "----------------------------------------------------"
 echo "Running Python linter against selected files:"
-echo $separate_files
+echo "$separate_files"
 echo "----------------------------------------------------"
 
 # check for individual files
