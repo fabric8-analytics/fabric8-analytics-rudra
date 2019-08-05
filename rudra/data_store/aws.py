@@ -37,7 +37,7 @@ class AmazonS3(AbstractDataStore):
 
     def __init__(self, aws_access_key_id=None, aws_secret_access_key=None,
                  bucket_name=None, region_name=None, use_ssl=False,
-                 encryption=None, versioned=None, local_dev=False):
+                 encryption=None, versioned=None, local_dev=False, endpoint_url=None):
         """Initialize object, setup connection to the AWS S3."""
         self._s3 = None
 
@@ -51,7 +51,7 @@ class AmazonS3(AbstractDataStore):
 
         self._local_dev = local_dev
         # let boto3 decide if we don't have local development proper values
-        self._endpoint_url = self._DEFAULT_LOCAL_ENDPOINT
+        self._endpoint_url = endpoint_url or self._DEFAULT_LOCAL_ENDPOINT
         self._use_ssl = True
         # 'encryption' (argument) might be False - means don't encrypt
         self.encryption = self._DEFAULT_ENCRYPTION if encryption is None else encryption
