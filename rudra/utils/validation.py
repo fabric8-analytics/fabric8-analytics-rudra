@@ -12,6 +12,7 @@ def nn(name):
     # This is taken from PEP 503.
     return _canonicalize_regex.sub("-", name).lower()
 
+
 def check_field_exists(input_data, fields):
     """Check field exist in the input data."""
     if isinstance(input_data, dict):

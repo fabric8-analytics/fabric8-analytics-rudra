@@ -23,8 +23,10 @@ class MavenEMR(EMRScriptBuilder):
         log_file_name = '{}.log'.format(name)
 
         log_uri = 's3://{bucket}/{log_file}'.format(
-            bucket='{}-automated-analytics-spark-jobs'.format(self.env),
+            bucket=self.bucket_name,
             log_file=log_file_name)
+
+        logger.info("Logs are gonna store at {}".format(log_uri))
 
         emr_config_obj = EMRConfig(name=name,
                                    s3_bootstrap_uri=bootstrap_uri,
