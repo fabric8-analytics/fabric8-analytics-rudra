@@ -1,3 +1,5 @@
+"""Tests for the AmazonS3 interface."""
+
 from rudra.data_store.aws import AmazonS3
 from rudra.data_store.bigquery.base import DataProcessing
 from moto import mock_s3
@@ -12,6 +14,7 @@ AWS_SECRET = 'fake_secret'
 
 @pytest.fixture(autouse=True)
 def s3_bucket():
+    """S3 bucket mock."""
     with mock_s3():
         boto3.client('s3').create_bucket(Bucket=BUCKET)
         yield boto3.resource('s3').Bucket(BUCKET)
@@ -19,7 +22,7 @@ def s3_bucket():
 
 @pytest.fixture
 def s3(request):
-
+    """S3 interface."""
     s3 = AmazonS3(aws_access_key_id=AWS_KEY,
                   aws_secret_access_key=AWS_SECRET,
                   bucket_name=BUCKET)
@@ -34,6 +37,7 @@ def s3(request):
 
 
 def test_update_s3_bucket_file_not_exist(s3):
+    """Test the method DataProcessing.update_s3_bucket."""
     os.environ['AWS_S3_ACCESS_KEY_ID'] = AWS_KEY
     os.environ['AWS_S3_SECRET_ACCESS_KEY'] = AWS_SECRET
 
@@ -50,6 +54,7 @@ def test_update_s3_bucket_file_not_exist(s3):
 
 
 def test_update_s3_bucket_file_exist(s3):
+    """Test the method DataProcessing.update_s3_bucket."""
     os.environ['AWS_S3_ACCESS_KEY_ID'] = AWS_KEY
     os.environ['AWS_S3_SECRET_ACCESS_KEY'] = AWS_SECRET
 
