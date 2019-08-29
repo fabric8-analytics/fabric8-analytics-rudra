@@ -1,3 +1,5 @@
+"""Tests for helper functions."""
+
 import rudra.utils.helper as helper
 import requests
 import pytest

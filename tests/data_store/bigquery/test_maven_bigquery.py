@@ -1,3 +1,5 @@
+"""Tests for Maven BigQuery module."""
+
 import types
 import tempfile
 import shutil

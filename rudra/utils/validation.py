@@ -8,7 +8,7 @@ _canonicalize_regex = re.compile(r"[-_.]+")
 
 
 def nn(name):
-    """Returns a normalized name."""
+    """Return a normalized name."""
     # This is taken from PEP 503.
     return _canonicalize_regex.sub("-", name).lower()
 

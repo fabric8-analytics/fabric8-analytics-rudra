@@ -1,3 +1,5 @@
+"""Tests for SimpleMercator class."""
+
 import pytest
 
 from rudra.utils.mercator import SimpleMercator

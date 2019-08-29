@@ -2,7 +2,6 @@
 import os
 import time
 import tempfile
-import json
 from google.cloud import bigquery
 
 from rudra import logger

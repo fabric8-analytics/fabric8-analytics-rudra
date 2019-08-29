@@ -1,3 +1,5 @@
+"""Tests for NPM BigQuery module."""
+
 import types
 import tempfile
 import shutil

@@ -1,3 +1,5 @@
+"""Tests for validation module."""
+
 from rudra.utils.validation import check_field_exists, check_url_alive, BQValidation
 import pytest
 
