@@ -1,3 +1,5 @@
+"""Tests for BigQuery builder."""
+
 import os
 import uuid
 import sqlite3

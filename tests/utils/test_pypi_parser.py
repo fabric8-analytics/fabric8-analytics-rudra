@@ -1,3 +1,5 @@
+"""Tests for pypi_parser module."""
+
 from rudra.utils.pypi_parser import pip_req
 from rudra.utils.pypi_parser import get_file_content
 from rudra.utils.pypi_parser import parse_requirements

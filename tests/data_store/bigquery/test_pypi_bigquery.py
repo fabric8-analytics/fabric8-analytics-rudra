@@ -1,3 +1,5 @@
+"""Tests for PyPi BigQuery module."""
+
 import types
 import tempfile
 import shutil
