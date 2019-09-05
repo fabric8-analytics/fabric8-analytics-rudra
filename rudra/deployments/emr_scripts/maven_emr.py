@@ -26,7 +26,7 @@ class MavenEMR(EMRScriptBuilder):
             bucket=self.bucket_name,
             log_file=log_file_name)
 
-        logger.info("Logs are gonna store at {}".format(log_uri))
+        logger.info("Logs will be stored at {}".format(log_uri))
 
         emr_config_obj = EMRConfig(name=name,
                                    s3_bootstrap_uri=bootstrap_uri,
@@ -37,6 +37,8 @@ class MavenEMR(EMRScriptBuilder):
                                    hyper_params=self.hyper_params)
 
         configs = emr_config_obj.get_config()
+        configs["Applications"] = []
+        logger.info("Configurations for Maven EMR are: {}".format(configs))
         status = self.aws_emr.run_flow(configs)
         logger.info("EMR job is running {}".format(status))
         status_code = status.get('ResponseMetadata', {}).get('HTTPStatusCode')
