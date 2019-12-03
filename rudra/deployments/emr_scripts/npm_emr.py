@@ -27,6 +27,7 @@ class NpmEMR(EMRScriptBuilder):
         emr_config_obj = EMRConfig(name=name,
                                    s3_bootstrap_uri=bootstrap_uri,
                                    training_repo_url=self.training_repo_url,
+                                   training_file_name='recommendation_engine/autoencoder/train/train.py'
                                    instance_type='p3.2xlarge',
                                    log_uri=log_uri,
                                    ecosystem=self.ecosystem,
