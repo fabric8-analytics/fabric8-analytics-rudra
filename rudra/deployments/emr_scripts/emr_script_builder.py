@@ -40,6 +40,10 @@ class EMRScriptBuilder(AbstractEMR):
             or input_dict.get('aws_access_key')
         aws_secret_key = os.getenv("AWS_S3_SECRET_ACCESS_KEY")\
             or input_dict.get('aws_secret_key')
+        aws_emr_access_key = os.getenv("AWS_EMR_ACCESS_KEY_ID") \
+            or input_dict.get('aws_emr_access_key')
+        aws_emr_secret_key = os.getenv("AWS_EMR_SECRET_ACCESS_KEY")\
+            or input_dict.get('aws_emr_secret_key')
         github_token = os.getenv("GITHUB_TOKEN", input_dict.get('github_token'))
         self.bucket_name = input_dict.get('bucket_name')
         if self.hyper_params:
@@ -59,8 +63,8 @@ class EMRScriptBuilder(AbstractEMR):
             'GITHUB_TOKEN': github_token
         }
 
-        self.aws_emr = AmazonEmr(aws_access_key_id=aws_access_key,
-                                 aws_secret_access_key=aws_secret_key)
+        self.aws_emr = AmazonEmr(aws_access_key_id=aws_emr_access_key,
+                                 aws_secret_access_key=aws_emr_secret_key)
 
         self.aws_emr_client = self.aws_emr.connect()
 

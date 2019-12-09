@@ -32,7 +32,9 @@ class TestEMRScriptBuilder:
             assert not set(ast.literal_eval(grps[1])) - req_params
 
     @patch.dict('os.environ', {'AWS_S3_ACCESS_KEY_ID': 'fake_id',
-                               'AWS_S3_SECRET_ACCESS_KEY': 'fake_secret'})
+                               'AWS_S3_SECRET_ACCESS_KEY': 'fake_secret',
+                               'AWS_EMR_ACCESS_KEY_ID': 'fake_id',
+                               'AWS_EMR_SECRET_ACCESS_KEY': 'fake_secret'})
     def test_construct_job(self):
         emr_builder_obj = EMRScriptBuilder()
         req_params = {'environment': 'dev',
