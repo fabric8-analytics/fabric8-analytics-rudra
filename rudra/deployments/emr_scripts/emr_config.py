@@ -52,6 +52,7 @@ class EMRConfig:
             "PYTHONUNBUFFERED": "0"
         }
         self.instance_type_properties.update(properties)
+        self.ecosystem = ecosystem
 
     def get_config(self):
         """Get the config object."""
@@ -62,6 +63,12 @@ class EMRConfig:
 
         execute_training_code = ['python3.6'.format(self.repo_dir),
                                  training_file, self.hyper_params]
+
+        if self.ecosystem=='npm':
+            training_file = "{}/{}".format(self.repo_dir, self.training_file_name)
+            execute_training_code = ['/usr/local/bin/python3.7'.format(self.repo_dir),
+                                     training_file]
+
         step2 = {
             'Name': 'setup - copy files',
             'ActionOnFailure': 'TERMINATE_CLUSTER',
