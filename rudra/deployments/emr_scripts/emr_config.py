@@ -61,13 +61,12 @@ class EMRConfig:
         download_training_code = [
             'git', 'clone', self.training_repo_url, self.repo_dir]
 
-        execute_training_code = ['python3.6'.format(self.repo_dir),
-                                 training_file, self.hyper_params]
-
         if self.ecosystem=='npm':
-            training_file = "{}/{}".format(self.repo_dir, self.training_file_name)
             execute_training_code = ['/usr/local/bin/python3.7'.format(self.repo_dir),
                                      training_file]
+        else:
+            execute_training_code = ['python3.6'.format(self.repo_dir),
+                                    training_file, self.hyper_params]
 
         step2 = {
             'Name': 'setup - copy files',
