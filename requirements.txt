@@ -19,7 +19,7 @@ demjson==2.2.4
 docker==3.7.0
 docker-pycreds==0.4.0
 docutils==0.14
-ecdsa==0.13
+ecdsa==0.13.3
 future==0.17.1
 google-api-core==1.8.0
 google-auth==1.6.3
