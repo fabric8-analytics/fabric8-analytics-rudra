@@ -77,6 +77,6 @@ sphinxcontrib-qthelp==1.0.2
 sphinxcontrib-serializinghtml==1.1.1
 urllib3==1.24.2
 websocket-client==0.54.0
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 wrapt==1.11.1
 xmltodict==0.12.0
