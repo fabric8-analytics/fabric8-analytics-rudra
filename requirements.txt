@@ -13,7 +13,7 @@ certifi==2018.11.29
 cffi==1.12.1
 chardet==3.0.4
 cookies==2.2.1
-cryptography==2.5
+cryptography==3.2
 daiquiri==1.5.0
 demjson==2.2.4
 docker==3.7.0
