@@ -39,6 +39,10 @@ file_name=${git_home}/bay-services/$1
 branch_name=bump-$1-$3
 model_version=$3
 
+# Setting up global git user
+echo "Setting up git user"
+git config --global user.name ${user_name}
+
 # Clone the user-repo, set upstream and branch out
 echo "Cloning the saas-analytics user-repo..."
 (git clone ${user_repo_url} ${git_home} || : ) && \
