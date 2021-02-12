@@ -21,21 +21,17 @@ from github import Github as gh
 class Github:
     """Class to perform action related to github like get content / raise PR etc."""
 
-    def __init__(self, github_token):
+    def __init__(self, github_token: str):
         """Get github token to initialize the class."""
-        # Create github object using token
         self._github = gh(github_token)
 
-    def set_repo(self, repo_path, master_ref='master'):
+    def set_repo(self, repo_path: str, master_ref: str = 'master'):
         """Setup repo and master ref details."""
         self._master_ref = master_ref
-
-        # Get repo and set to private member
         self._repo = self._github.get_repo(repo_path)
 
-    def get_latest_commit_hash(self):
+    def get_latest_commit_hash(self) -> str:
         """Get the latest commit hash of the repo."""
-        # Read all commits for a repo.
         commits = self._repo.get_commits()
 
         # Read the latest commit of the repo at index '0'
@@ -43,28 +39,26 @@ class Github:
 
         return latest_commit_hash
 
-    def create_branch(self, branch_name):
+    def create_branch(self, branch_name: str) -> str:
         """Create a branch with latest code."""
-        # Create branch with latest commit
-        ref = self._repo.create_git_ref('refs/heads/' + branch_name,
+        ref = self._repo.create_git_ref(f'refs/heads/{branch_name}',
                                         self.get_latest_commit_hash())
-        return ref.url
+        return ref.ref
 
-    def get_content(self, file_path):
+    def get_content(self, file_path: str) -> (str, str):
         """Read and returns content of the given file path within repo."""
-        # Read file content of a path relative to repo root directory.
         contents = self._repo.get_contents(file_path)
-        return contents.sha, contents.decoded_content
+        return contents.sha, contents.decoded_content.decode('ascii')
 
-    def update_content(self, branch_name, file_path, update_message, current_sha, file_content):
+    def update_content(self, branch_name: str, file_path: str, update_message: str,
+                       current_sha: str, file_content: str) -> str:
         """Update the file content for path."""
-        # Up on given branch it willl update the file content
-        update = self._repo.update_file(file_path, update_message, file_content, current_sha,
-                                        branch="refs/heads/" + branch_name)
+        update = self._repo.update_file(file_path, update_message, file_content.encode('ascii'),
+                                        current_sha, branch=f'refs/heads/{branch_name}')
         return update['commit'].sha
 
-    def create_pr(self, branch_name, title, body):
+    def create_pr(self, branch_name: str, title: str, body: str) -> str:
         """Raise the PR to merge changes from branch to master."""
-        pr = self._repo.create_pull(title=title, body=body, head="refs/heads/" + branch_name,
-                                    base="refs/heads/" + self._master_ref)
+        pr = self._repo.create_pull(title=title, body=body, head=f'refs/heads/{branch_name}',
+                                    base=f'refs/heads/{self._master_ref}')
         return pr.number
