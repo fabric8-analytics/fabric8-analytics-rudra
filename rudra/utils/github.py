@@ -48,12 +48,12 @@ class Github:
         if not commit_hash:
             commit_hash = self.get_latest_commit_hash()
         contents = self._repo.get_contents(file_path, ref=commit_hash)
-        return contents.sha, contents.decoded_content.decode('ascii')
+        return contents.sha, contents.decoded_content.decode('utf8')
 
     def update_content(self, branch_name: str, file_path: str, update_message: str,
                        current_sha: str, file_content: str) -> str:
         """Update the file content for path."""
-        update = self._repo.update_file(file_path, update_message, file_content.encode('ascii'),
+        update = self._repo.update_file(file_path, update_message, file_content,
                                         current_sha, branch=f'refs/heads/{branch_name}')
         return update['commit'].sha
 
