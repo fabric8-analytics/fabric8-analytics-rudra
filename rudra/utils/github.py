@@ -21,12 +21,9 @@ from github import Github as gh
 class Github:
     """Class to perform action related to github like get content / raise PR etc."""
 
-    def __init__(self, github_token: str):
+    def __init__(self, github_token: str, repo_path: str, master_ref: str = 'master'):
         """Get github token to initialize the class."""
         self._github = gh(github_token)
-
-    def set_repo(self, repo_path: str, master_ref: str = 'master'):
-        """Setup repo and master ref details."""
         self._master_ref = master_ref
         self._repo = self._github.get_repo(repo_path)
 
@@ -39,15 +36,18 @@ class Github:
 
         return latest_commit_hash
 
-    def create_branch(self, branch_name: str) -> str:
+    def create_branch(self, branch_name: str, commit_hash: str = None) -> str:
         """Create a branch with latest code."""
-        ref = self._repo.create_git_ref(f'refs/heads/{branch_name}',
-                                        self.get_latest_commit_hash())
+        if not commit_hash:
+            commit_hash = self.get_latest_commit_hash()
+        ref = self._repo.create_git_ref(f'refs/heads/{branch_name}', commit_hash)
         return ref.ref
 
-    def get_content(self, file_path: str) -> (str, str):
+    def get_content(self, file_path: str, commit_hash: str = None) -> (str, str):
         """Read and returns content of the given file path within repo."""
-        contents = self._repo.get_contents(file_path)
+        if not commit_hash:
+            commit_hash = self.get_latest_commit_hash()
+        contents = self._repo.get_contents(file_path, ref=commit_hash)
         return contents.sha, contents.decoded_content.decode('ascii')
 
     def update_content(self, branch_name: str, file_path: str, update_message: str,
