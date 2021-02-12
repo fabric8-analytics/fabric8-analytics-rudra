@@ -15,16 +15,16 @@
 # Author: Dharmendra G Patel <dhpatel@redhat.com>
 #
 """Github utility providing functionality to read and write github resource."""
-from github import Github
+from github import Github as gh
 
 
-class GithubUtils:
+class Github:
     """Class to perform action related to github like get content / raise PR etc."""
 
     def __init__(self, github_token):
         """Get github token to initialize the class."""
         # Create github object using token
-        self._github = Github(github_token)
+        self._github = gh(github_token)
 
     def set_repo(self, repo_path, master_ref='master'):
         """Setup repo and master ref details."""
