@@ -57,8 +57,8 @@ class Github:
                                         current_sha, branch=f'refs/heads/{branch_name}')
         return update['commit'].sha
 
-    def create_pr(self, branch_name: str, title: str, body: str) -> str:
+    def create_pr(self, head_ref: str, title: str, body: str) -> str:
         """Raise the PR to merge changes from branch to master."""
-        pr = self._repo.create_pull(title=title, body=body, head=f'refs/heads/{branch_name}',
+        pr = self._repo.create_pull(title=title, body=body, head=head_ref,
                                     base=f'refs/heads/{self._master_ref}')
         return pr.number
