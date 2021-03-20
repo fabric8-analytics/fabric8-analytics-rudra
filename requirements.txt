@@ -29,7 +29,7 @@ google-resumable-media==0.3.2
 googleapis-common-protos==1.5.8
 idna==2.8
 imagesize==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 jmespath==0.9.3
 jsondiff==1.1.1
 jsonpickle==1.1
