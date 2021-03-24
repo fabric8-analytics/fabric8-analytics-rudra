@@ -60,7 +60,7 @@ PyYAML==4.2b4
 requests==2.21.0
 requests-futures==0.9.9
 responses==0.10.5
-rsa==4.0
+rsa==4.1
 ruamel.yaml==0.15.88
 s3transfer==0.1.13
 scipy==1.2.1
