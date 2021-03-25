@@ -56,7 +56,7 @@ pytest==4.3.0
 python-dateutil==2.8.0
 python-jose==2.0.2
 pytz==2018.9
-PyYAML==4.2b4
+PyYAML==5.4
 requests==2.21.0
 requests-futures==0.9.9
 responses==0.10.5
